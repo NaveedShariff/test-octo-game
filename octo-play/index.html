@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Spider Swinger</title>
+  <style>
+    :root{
+      --sky1:#0b1f3a; /* deep night */
+      --sky2:#0e355f;
+      --sky3:#155a9c;
+      --ground:#0b0f1a;
+      --building:#101826;
+      --building2:#0e1a2b;
+      --accent:#ff2d55; /* spidey */
+      --ui:#ffffff;
+      --shadow:rgba(0,0,0,.3);
+    }
+    html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--sky1),var(--sky2) 40%,var(--sky3) 90%);font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Helvetica,Arial,sans-serif;color:var(--ui);}    
+    #wrap{position:fixed;inset:0;display:flex;align-items:center;justify-content:center}
+    canvas{width:100vw;height:100vh;display:block}
+    .hud{position:fixed;left:0;top:0;right:0;display:flex;justify-content:space-between;align-items:flex-start;padding:12px 16px;pointer-events:none}
+    .score{font-weight:700;font-size:20px;text-shadow:0 2px 6px var(--shadow)}
+    .hint{opacity:.8;font-size:12px}
+    .badge{background:rgba(255,255,255,.08);backdrop-filter:blur(4px);border:1px solid rgba(255,255,255,.15);padding:8px 10px;border-radius:12px;box-shadow:0 8px 20px -8px var(--shadow)}
+
+    /* Overlays */
+    .overlay{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.45);z-index:5}
+    .overlay.show{display:flex}
+    .panel{width:min(92vw,820px);background:rgba(16,24,38,.9);border:1px solid rgba(255,255,255,.18);border-radius:16px;box-shadow:0 24px 60px -24px rgba(0,0,0,.6);padding:20px}
+    .panel h2{margin:6px 0 14px 0;font-size:24px}
+    .row{display:flex;gap:16px;flex-wrap:wrap}
+    .col{flex:1 1 280px}
+    .controls-bar{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+    .btn-ui{pointer-events:auto;padding:10px 14px;border-radius:12px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.08);color:var(--ui);font-weight:700;cursor:pointer}
+    .btn-ui:active{transform:translateY(1px)}
+    .input{width:100%;padding:10px 12px;border-radius:10px;border:1px solid rgba(255,255,255,.25);background:rgba(0,0,0,.2);color:var(--ui)}
+    .label{font-size:13px;opacity:.85;margin-bottom:6px;display:block}
+
+    /* Top-right Menu button */
+    #openMenuBtn{position:fixed;right:16px;top:16px;z-index:6}
+
+    /* Mobile controls */
+    .controls{position:fixed;inset:0;pointer-events:none}
+    .pad{position:absolute;bottom:18px;display:flex;gap:10px;pointer-events:auto}
+    .pad.left{left:18px}
+    .pad.right{right:18px}
+    .btn{width:64px;height:64px;border-radius:20px;display:grid;place-items:center;font-weight:800;font-size:14px;text-transform:uppercase;color:var(--ui);background:rgba(255,255,255,.08);backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,.2);box-shadow:0 12px 30px -12px var(--shadow);user-select:none;-webkit-user-select:none;touch-action:manipulation}
+    .btn:active{transform:translateY(1px)}
+    .btn.accent{background:radial-gradient(circle at 30% 30%, rgba(255,45,85,.35), rgba(255,45,85,.15));border-color:rgba(255,45,85,.5)}
+
+    /* Simple cloud parallax visuals */
+    .clouds{position:fixed;inset:0;overflow:hidden;pointer-events:none}
+    .cloud{position:absolute;top:10%;width:220px;height:80px;border-radius:80px;background:rgba(255,255,255,.08);filter:blur(2px)}
+    .cloud:before,.cloud:after{content:"";position:absolute;background:inherit;border-radius:inherit}
+    .cloud:before{width:140px;height:60px;left:-40px;top:10px}
+    .cloud:after{width:160px;height:70px;right:-40px;top:5px}
+
+    /* Desktop-only help */
+    @media (min-width: 900px){
+      .hint{font-size:13px}
+    }
+  </style>
+</head>
+<body>
+  <div id="wrap"><canvas id="game" width="1280" height="720" aria-label="Spider Swinger Game Canvas"></canvas></div>
+  <div class="hud">
+    <div class="badge">
+      <div class="score" id="score">Score: 0</div>
+      <div class="hint">Desktop: W attach/release web • A/D move • S drop • R restart<br/>Mobile: use the buttons below<br/>Auto-respawn when you fall!</div>
+    </div>
+    <div class="badge" id="status">Swing: —</div>
+  </div>
+
+  <!-- Top-right Menu button -->
+  <button id="openMenuBtn" class="btn btn-ui">Menu</button>
+
+  <!-- Start Menu Overlay -->
+  <div id="startMenu" class="overlay show" role="dialog" aria-modal="true">
+    <div class="panel">
+      <h2>Spider Swinger</h2>
+      <div class="row">
+        <div class="col">
+          <div class="label">Best Score</div>
+          <div id="bestScoreLabel" style="font-size:28px;font-weight:800">0</div>
+        </div>
+        <div class="col">
+          <div class="label">Last Score</div>
+          <div id="lastScoreLabel" style="font-size:28px;font-weight:800">0</div>
+        </div>
+      </div>
+      <div class="controls-bar">
+        <button id="startBtn" class="btn-ui">Start</button>
+        <button id="openScorecardBtn" class="btn-ui">Download Score</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scorecard Overlay -->
+  <div id="scorecard" class="overlay" role="dialog" aria-modal="true">
+    <div class="panel">
+      <h2>Score Card</h2>
+      <div class="row">
+        <div class="col" style="display:flex;align-items:center;gap:12px">
+          <img id="badgePreview" alt="badge" style="width:84px;height:84px;object-fit:contain;image-rendering:auto"/>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <label class="label" for="handleInput">X (Twitter) Handle</label>
+            <input id="handleInput" class="input" placeholder="@yourhandle"/>
+          </div>
+        </div>
+        <div class="col" style="display:flex;align-items:center;justify-content:flex-end">
+          <div>
+            <div class="label">High Score</div>
+            <div id="highScoreValue" style="font-size:32px;font-weight:900;text-align:right">0</div>
+          </div>
+        </div>
+      </div>
+      <div style="margin-top:14px;text-align:center">
+        <div id="badgeMessage" style="opacity:.9"></div>
+      </div>
+      <div class="controls-bar">
+        <button id="downloadPngBtn" class="btn-ui">Download PNG</button>
+        <button id="closeScorecardBtn" class="btn-ui">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Parallax clouds purely cosmetic -->
+  <div class="clouds" aria-hidden="true">
+    <div class="cloud" style="left:5%; top:12%; width:260px; opacity:.35"></div>
+    <div class="cloud" style="left:35%; top:22%; width:220px; opacity:.28"></div>
+    <div class="cloud" style="left:65%; top:16%; width:280px; opacity:.25"></div>
+    <div class="cloud" style="left:80%; top:30%; width:200px; opacity:.2"></div>
+  </div>
+
+  <!-- Mobile controls -->
+  <div class="controls" aria-label="Mobile Controls">
+    <div class="pad left">
+      <div class="btn" data-hold="left" aria-label="Move Left">◀︎</div>
+      <div class="btn" data-hold="right" aria-label="Move Right">▶︎</div>
+    </div>
+    <div class="pad right">
+      <div class="btn accent" data-hold="swing" aria-label="Attach/Release Web">Web</div>
+      <div class="btn" data-hold="drop" aria-label="Drop">Drop</div>
+    </div>
+  </div>
+
+  <script>
+    // --- Utilities ---
+    const clamp=(n,min,max)=>Math.max(min,Math.min(max,n));
+    const lerp=(a,b,t)=>a+(b-a)*t;
+
+    // --- Game setup ---
+    const canvas=document.getElementById('game');
+    const ctx=canvas.getContext('2d');
+    const statusEl=document.getElementById('status');
+    const scoreEl=document.getElementById('score');
+    const startMenu=document.getElementById('startMenu');
+    const startBtn=document.getElementById('startBtn');
+    const openMenuBtn=document.getElementById('openMenuBtn');
+    const openScorecardBtn=document.getElementById('openScorecardBtn');
+    const bestScoreLabel=document.getElementById('bestScoreLabel');
+    const lastScoreLabel=document.getElementById('lastScoreLabel');
+    const scorecard=document.getElementById('scorecard');
+    const closeScorecardBtn=document.getElementById('closeScorecardBtn');
+    const downloadPngBtn=document.getElementById('downloadPngBtn');
+    const handleInput=document.getElementById('handleInput');
+    const highScoreValue=document.getElementById('highScoreValue');
+    const badgePreview=document.getElementById('badgePreview');
+    const badgeMessage=document.getElementById('badgeMessage');
+
+    let W=canvas.width, H=canvas.height;
+    function resize(){
+      // Maintain 16:9 internal res but scale canvas for crispness
+      const dpr=window.devicePixelRatio||1;
+      canvas.width = Math.floor(window.innerWidth*dpr);
+      canvas.height = Math.floor(window.innerHeight*dpr);
+      W=canvas.width; H=canvas.height;
+      ctx.setTransform(dpr,0,0,dpr,0,0);
+    }
+    window.addEventListener('resize', resize, {passive:true});
+    resize();
+
+    // --- World state ---
+    const gravity=0.9; // px/frame^2 after DPR transform
+    const moveAccel=0.6;
+    const maxRunSpeed=8;
+
+    const player={x:120,y:300,vx:0,vy:0,r:12,onGround:false,rope:null,ropeLen:0,dead:false};
+
+    // Lava layer (hazard) just above the bottom of the screen
+    const lavaHeight=120; // height of lava from bottom
+    const getLavaY = () => window.innerHeight - lavaHeight; // top edge of lava in screen coords
+
+    // Camera follows player on x
+    let camX=0;
+
+    // Buildings and anchor points
+    const buildings=[]; // {x,w,h,top}
+    const anchors=[];   // {x,y}
+
+    function spawnInitialCity(){
+      buildings.length=0; anchors.length=0;
+      let x=0;
+      for(let i=0;i<40;i++){
+        const gap = (i===0)?0:Math.random()*90+60; // space between buildings
+        x += gap + (i===0?0:buildings[i-1]?.w||0);
+        const w=Math.random()*120+100;
+        const h= lerp(window.innerHeight*0.25, window.innerHeight*0.6, Math.random());
+        const top=getLavaY()-h; // ensure buildings end at lava top
+        buildings.push({x,w,h,top});
+        // Add 1-2 anchors per building near the roofline
+        const aCount = Math.random()<0.5?1:2;
+        for(let k=0;k<aCount;k++){
+          const ax = x + lerp(10,w-10, k/(aCount-1||1));
+          const ay = top - 60 - Math.random()*40;
+          anchors.push({x:ax,y:ay});
+        }
+      }
+    }
+
+    function extendCityIfNeeded(){
+      // If we are within 3000px from the last building, add more
+      const last=buildings[buildings.length-1];
+      if(!last || player.x + 3000 > last.x + last.w){
+        let x = last ? last.x + last.w : 0;
+        for(let i=0;i<20;i++){
+          const gap = Math.random()*110+70;
+          x += gap;
+          const w=Math.random()*140+110;
+          const h= lerp(window.innerHeight*0.25, window.innerHeight*0.65, Math.random());
+          const top=getLavaY()-h; // end at lava
+          buildings.push({x,w,h,top});
+          const aCount = Math.random()<0.45?1:2;
+          for(let k=0;k<aCount;k++){
+            const ax = x + lerp(14,w-14, k/(aCount-1||1));
+            const ay = top - 70 - Math.random()*60;
+            anchors.push({x:ax,y:ay});
+          }
+          x += w;
+        }
+      }
+    }
+
+    spawnInitialCity();
+
+    // --- Input ---
+    const keys={a:false,d:false,w:false,s:false};
+
+    window.addEventListener('keydown',e=>{
+      const k=e.key.toLowerCase();
+      if(['w','a','s','d',' '].includes(k)) e.preventDefault();
+      if(k==='a') keys.a=true;
+      if(k==='d') keys.d=true;
+      if(k==='w' || k===' ') keys.w=true;
+      if(k==='s') keys.s=true;
+      if(k==='r') restart();
+    });
+    window.addEventListener('keyup',e=>{
+      const k=e.key.toLowerCase();
+      if(k==='a') keys.a=false;
+      if(k==='d') keys.d=false;
+      if(k==='w' || k===' ') keys.w=false;
+      if(k==='s') keys.s=false;
+    });
+
+    // Mobile buttons (hold behavior)
+    const holds={left:false,right:false,swing:false,drop:false};
+    for(const el of document.querySelectorAll('[data-hold]')){
+      const name=el.getAttribute('data-hold');
+      const set=(v)=>{holds[name]=v; if(name==='left') keys.a=v; if(name==='right') keys.d=v; if(name==='swing') keys.w=v; if(name==='drop') keys.s=v;};
+      const start=(e)=>{e.preventDefault(); set(true)};
+      const end=(e)=>{e.preventDefault(); set(false)};
+      el.addEventListener('touchstart',start,{passive:false});
+      el.addEventListener('touchend',end,{passive:false});
+      el.addEventListener('touchcancel',end,{passive:false});
+      el.addEventListener('mousedown',start);
+      el.addEventListener('mouseup',end);
+      el.addEventListener('mouseleave',end);
+    }
+
+    // --- Web attach/detach ---
+    function tryAttachWeb(){
+      // Find nearest anchor in front within range
+      const range=420; // px
+      let best=null, bestD=1e9;
+      const facing = keys.a? -1 : (keys.d? 1 : 1);
+      const px=player.x, py=player.y;
+      for(const a of anchors){
+        const dx=a.x-px, dy=a.y-py;
+        const dist=Math.hypot(dx,dy);
+        if(dist<range && dist<bestD && Math.sign(dx)===Math.sign(facing)){
+          best=a; bestD=dist;
+        }
+      }
+      if(best){
+        player.rope={x:best.x,y:best.y};
+        player.ropeLen=bestD;
+      }
+    }
+
+    function detachWeb(){ player.rope=null; }
+
+    // --- Collision helpers ---
+    function groundCollision(){
+      player.onGround=false;
+      for(const b of buildings){
+        // if over building
+        if(player.x> b.x && player.x < b.x+b.w){
+          if(player.vy>=0 && player.y + player.r > b.top && player.y + player.r < b.top + 40){
+            player.y=b.top - player.r; player.vy=0; player.onGround=true; return;
+          }
+        }
+      }
+    }
+
+    // --- Scoring ---
+    let score=0; let bestX=0; let passed=0;
+    let highestScore= Number(localStorage.getItem('spider_high_score')||0);
+    let lastScore=0;
+    let gameActive=false; // running and scoring when true
+    let inMenu=true; // true when start menu or overlays should pause gameplay
+    let respawnTimer=0;
+
+    function updateScore(){
+      if(!gameActive) return; // Don't update score when game is over
+      bestX=Math.max(bestX, player.x);
+      score = Math.floor(bestX*0.1 + passed*25);
+      scoreEl.textContent = `Score: ${score}`;
+    }
+
+    // Helper to place player on the first building rooftop
+    function placePlayerOnFirstBuilding(){
+      const first = buildings[0];
+      if(first){
+        player.x = first.x + Math.min(40, first.w*0.25);
+        player.y = first.top - player.r;
+        player.vx = 0;
+        player.vy = 0;
+        player.onGround = true;
+        camX = 0;
+      }
+    }
+
+    // --- Restart ---
+    function restart(){
+      player.vx=2; player.vy=0; player.rope=null; player.onGround=false; player.dead=false; 
+      bestX=0; score=0; passed=0; camX=0; gameActive=true; respawnTimer=0;
+      spawnInitialCity();
+      placePlayerOnFirstBuilding();
+      updateScoreDisplay();
+    }
+
+    // --- Respawn ---
+    function respawn(){
+      player.vx=2; player.vy=0; player.rope=null; player.onGround=false; player.dead=false;
+      bestX=0; score=0; passed=0; camX=0; gameActive=true; respawnTimer=0;
+      placePlayerOnFirstBuilding();
+      updateScoreDisplay();
+    }
+
+    // --- Menus & Scorecard ---
+    function updateMenuLabels(){
+      bestScoreLabel.textContent = highestScore;
+      lastScoreLabel.textContent = lastScore;
+    }
+
+    function showMenu(){
+      gameActive=false; inMenu=true; startMenu.classList.add('show');
+      updateMenuLabels();
+    }
+
+    function hideMenu(){
+      inMenu=false; startMenu.classList.remove('show');
+    }
+
+    function endRun(){
+      lastScore = score;
+      highestScore = Math.max(highestScore, lastScore);
+      localStorage.setItem('spider_high_score', String(highestScore));
+      updateScoreDisplay();
+      updateMenuLabels();
+    }
+
+    function computeBadgeForScore(s){
+      if(s<=200) return {name:'toddler', path:'action-icons/toddler.png', msg:'You are a toddler, push yourself harder'};
+      if(s<=500) return {name:'ninja', path:'action-icons/ninja.png', msg:'you have a good ninja stealth'};
+      if(s<=700) return {name:'samurai', path:'action-icons/samurai.png', msg:'No end but for a Samurai'};
+      if(s<=1500) return {name:'spartan', path:'action-icons/spartan.png', msg:'I am a Spartan'};
+      if(s<=10000) return {name:'missiah', path:'action-icons/missiah.png', msg:'you are the savior but this level  is not the end!'};
+      return {name:'god', path:'action-icons/god.png', msg:'congratulations you are appointed as God'};
+    }
+
+    function openScorecard(){
+      const badge=computeBadgeForScore(highestScore);
+      badgePreview.src = badge.path;
+      badgePreview.alt = badge.name;
+      highScoreValue.textContent = highestScore;
+      badgeMessage.textContent = badge.msg;
+      scorecard.classList.add('show');
+    }
+
+    function closeScorecard(){ scorecard.classList.remove('show'); }
+
+    function downloadScorecardPng(){
+      const w=900, h=500;
+      const c=document.createElement('canvas');
+      c.width=w; c.height=h; const g=c.getContext('2d');
+      // background card
+      g.fillStyle = '#0e1a2b'; g.fillRect(0,0,w,h);
+      // header
+      g.fillStyle='white'; g.font='bold 28px Inter, Arial'; g.fillText('Spider Swinger — Score Card', 24, 48);
+      // score
+      g.font='bold 56px Inter, Arial'; g.fillText(String(highestScore), w-24 - g.measureText(String(highestScore)).width, 110);
+      g.font='16px Inter, Arial'; g.fillText('High Score', w-24 - g.measureText('High Score').width, 82);
+      // handle
+      const handle = (handleInput.value||'').trim() || '@anonymous';
+      g.font='18px Inter, Arial'; g.fillText(`Handle: ${handle}`, 24, 86);
+      // left icon
+      const badge=computeBadgeForScore(highestScore);
+      const img=new Image();
+      img.onload=()=>{
+        const size=160; g.drawImage(img, 24, 120, size, size);
+        // bottom-center message
+        g.font='20px Inter, Arial';
+        const msg=badge.msg;
+        const tw=g.measureText(msg).width;
+        g.fillText(msg, (w-tw)/2, h-40);
+        // save
+        const a=document.createElement('a');
+        a.download='scorecard.png';
+        a.href=c.toDataURL('image/png');
+        a.click();
+      };
+      img.src = badge.path;
+    }
+
+    // Buttons
+    startBtn.addEventListener('click',()=>{ hideMenu(); restart(); gameActive=true; });
+    openMenuBtn.addEventListener('click',()=>{ showMenu(); });
+    openScorecardBtn.addEventListener('click',()=>{ openScorecard(); });
+    closeScorecardBtn.addEventListener('click',()=>{ closeScorecard(); });
+    downloadPngBtn.addEventListener('click',()=>{ downloadScorecardPng(); });
+
+    // --- Score Display ---
+    function updateScoreDisplay(){
+      if(gameActive){
+        scoreEl.textContent = `Score: ${score}`;
+      } else {
+        scoreEl.textContent = `Latest: ${lastScore} | Best: ${highestScore}`;
+      }
+    }
+
+    // --- Main loop ---
+    let lastTs=0;
+    function step(ts){
+      const dt = Math.min(33, ts-lastTs || 16); // simple frame clamp
+      lastTs=ts;
+      // Pause simulation when in menu. Still render background.
+      if(inMenu){
+        render();
+        requestAnimationFrame(step);
+        return;
+      }
+
+      extendCityIfNeeded();
+
+      // Input movement
+      if(player.onGround){
+        if(keys.a) player.vx = clamp(player.vx - moveAccel, -maxRunSpeed, maxRunSpeed);
+        if(keys.d) player.vx = clamp(player.vx + moveAccel, -maxRunSpeed, maxRunSpeed);
+        if(!keys.a && !keys.d) player.vx *= 0.86;
+      }
+
+      // Attach/Detach logic via W hold
+      if(keys.w && !player.rope) tryAttachWeb();
+      if(!keys.w && player.rope) detachWeb();
+      if(keys.s) detachWeb();
+
+      // Physics
+      player.vy += gravity;
+      player.x += player.vx; 
+      player.y += player.vy;
+
+      // Rope constraint (swing)
+      if(player.rope){
+        const rx = player.rope.x - player.x;
+        const ry = player.rope.y - player.y;
+        const dist = Math.hypot(rx,ry) || 1;
+        if(dist>player.ropeLen){
+          // Project position onto circle of rope length
+          const nx = rx/dist, ny = ry/dist; // direction from player to anchor
+          const px = player.rope.x - nx*player.ropeLen;
+          const py = player.rope.y - ny*player.ropeLen;
+          // Correct position
+          const dx = px - player.x, dy = py - player.y;
+          player.x = px; player.y = py;
+          // Remove radial velocity (keep tangential)
+          const vDot = player.vx*nx + player.vy*ny;
+          player.vx -= vDot*nx;
+          player.vy -= vDot*ny;
+          // Add a tiny tangential boost for feel when holding D/A
+          const tangentX = -ny, tangentY = nx;
+          if(keys.d) { player.vx += tangentX*0.25; player.vy += tangentY*0.25; }
+          if(keys.a) { player.vx -= tangentX*0.25; player.vy -= tangentY*0.25; }
+        }
+      }
+
+      // Collisions with rooftops (landing)
+      groundCollision();
+
+      // Lava hazard: touching lava kills
+      const lavaY = getLavaY();
+      if(player.y + player.r >= lavaY){
+        if(gameActive){
+          player.dead=true;
+          gameActive=false;
+          highestScore = Math.max(highestScore, score);
+          updateScoreDisplay();
+          respawnTimer = 120;
+          endRun();
+        }
+      }
+
+      // Fallback fail state: far below screen
+      if(player.y - player.r > H + 300){ 
+        if(gameActive) {
+          player.dead=true; 
+          gameActive=false;
+          highestScore = Math.max(highestScore, score);
+          updateScoreDisplay();
+          respawnTimer = 120; // 2 seconds at 60fps
+          endRun();
+        }
+      }
+      
+      // Respawn timer
+      if(respawnTimer > 0) {
+        respawnTimer--;
+        if(respawnTimer === 0) {
+          respawn();
+        }
+      }
+      
+      if(player.dead){
+        statusEl.textContent='Game Over — respawning in 2s...';
+      } else {
+        statusEl.textContent = player.rope ? `Swing: attached` : `Swing: free`;
+      }
+
+      // Camera follows with smoothing
+      camX = lerp(camX, player.x - window.innerWidth*0.35, 0.08);
+
+      // Count passed buildings for score
+      for(let i=passed;i<buildings.length;i++){
+        if(buildings[i].x + buildings[i].w < player.x){ passed=i; }
+        else break;
+      }
+
+      if(gameActive){ updateScore(); }
+      render();
+      requestAnimationFrame(step);
+    }
+
+    // --- Render ---
+    function render(){
+      const vw = window.innerWidth; const vh = window.innerHeight;
+      // Clear sky (already gradient background via CSS). We draw parallax stars and skyline silhouettes.
+      ctx.clearRect(0,0,vw,vh);
+
+      // Parallax distant skyline
+      const layers=[
+        {offset:0.2,color:'rgba(10,16,28,0.6)'},
+        {offset:0.35,color:'rgba(10,20,34,0.75)'}
+      ];
+      layers.forEach((layer,idx)=>{
+        ctx.fillStyle=layer.color;
+        for(let i=0;i<buildings.length;i+=2){
+          const b=buildings[i];
+          const x = Math.floor(b.x*layer.offset - camX*layer.offset);
+          const w=b.w*0.9;
+          const h=b.h*0.9 + (idx*20);
+          ctx.fillRect(x, vh - h*0.75, w, h*0.75);
+        }
+      });
+
+      // Foreground buildings
+      for(const b of buildings){
+        const x = Math.floor(b.x - camX);
+        const y = b.top;
+        if(x+b.w < -200 || x > window.innerWidth+200) continue;
+        // body
+        const g=ctx.createLinearGradient(0,y,0,vh);
+        g.addColorStop(0, getComputedStyle(document.documentElement).getPropertyValue('--building'));
+        g.addColorStop(1, getComputedStyle(document.documentElement).getPropertyValue('--building2'));
+        ctx.fillStyle=g;
+        ctx.fillRect(x, y, b.w, b.h);
+        // windows
+        ctx.fillStyle='rgba(255,255,255,0.06)';
+        const cw=12,ch=18, gap=10;
+        for(let cx=x+14; cx<x+b.w-10; cx+=cw+gap){
+          for(let cy=y+14; cy<y+b.h-20; cy+=ch+gap){
+            if(Math.random()>0.9) continue; // sparse
+            ctx.fillRect(cx, cy, cw, ch);
+          }
+        }
+      }
+
+      // Anchors (small dots)
+      ctx.fillStyle='rgba(255,255,255,0.6)';
+      for(const a of anchors){
+        const x = Math.floor(a.x - camX), y=a.y;
+        if(x<-20||x>window.innerWidth+20) continue;
+        ctx.beginPath(); ctx.arc(x,y,2,0,Math.PI*2); ctx.fill();
+      }
+
+      // Rope
+      if(player.rope){
+        ctx.strokeStyle='rgba(255,255,255,0.8)';
+        ctx.lineWidth=2;
+        ctx.beginPath();
+        ctx.moveTo(player.rope.x - camX, player.rope.y);
+        ctx.lineTo(player.x - camX, player.y);
+        ctx.stroke();
+      }
+
+      // Lava layer
+      const lavaTop = getLavaY();
+      const lavaGrad = ctx.createLinearGradient(0, lavaTop, 0, vh);
+      lavaGrad.addColorStop(0,'rgba(255,120,40,0.9)');
+      lavaGrad.addColorStop(0.35,'rgba(255,80,20,0.9)');
+      lavaGrad.addColorStop(1,'rgba(160,20,20,1)');
+      ctx.fillStyle = lavaGrad;
+      ctx.fillRect(0, lavaTop, vw, vh - lavaTop);
+
+      // Subtle lava glow
+      const glow = ctx.createLinearGradient(0, lavaTop-40, 0, lavaTop+10);
+      glow.addColorStop(0,'rgba(255,120,40,0)');
+      glow.addColorStop(1,'rgba(255,120,40,0.25)');
+      ctx.fillStyle=glow; ctx.fillRect(0, lavaTop-40, vw, 50);
+
+      // Player (spidey)
+      const px = player.x - camX, py = player.y;
+      ctx.save();
+      // body
+      ctx.fillStyle='white';
+      ctx.beginPath(); ctx.arc(px, py, player.r, 0, Math.PI*2); ctx.fill();
+      // suit accent
+      ctx.strokeStyle=getComputedStyle(document.documentElement).getPropertyValue('--accent');
+      ctx.lineWidth=3; ctx.beginPath(); ctx.arc(px, py, player.r-3, 0, Math.PI*2); ctx.stroke();
+      // direction indicator
+      ctx.fillStyle=getComputedStyle(document.documentElement).getPropertyValue('--accent');
+      ctx.beginPath(); ctx.arc(px + Math.sign(player.vx||1)*6, py-2, 2, 0, Math.PI*2); ctx.fill();
+      ctx.restore();
+
+      // Ground fade at bottom
+      const grd=ctx.createLinearGradient(0, vh-120, 0, vh);
+      grd.addColorStop(0,'rgba(0,0,0,0)'); grd.addColorStop(1,'rgba(0,0,0,.3)');
+      ctx.fillStyle=grd; ctx.fillRect(0, vh-120, vw, 120);
+    }
+
+    // Start in menu; build a scene for background
+    spawnInitialCity();
+    placePlayerOnFirstBuilding();
+    showMenu();
+    requestAnimationFrame(step);
+  </script>
+</body>
+</html>
