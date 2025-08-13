@@ -137,26 +137,29 @@
   <!-- Top-right Menu button -->
   <button id="openMenuBtn" class="btn btn-ui">Menu</button>
 
-  <!-- Start Menu Overlay -->
-  <div id="startMenu" class="overlay show" role="dialog" aria-modal="true">
-    <div class="panel">
-      <h2>Spider Swinger</h2>
-      <div class="row">
-        <div class="col">
-          <div class="label">Best Score</div>
-          <div id="bestScoreLabel" style="font-size:28px;font-weight:800">0</div>
-        </div>
-        <div class="col">
-          <div class="label">Last Score</div>
-          <div id="lastScoreLabel" style="font-size:28px;font-weight:800">0</div>
-        </div>
+<!-- Start Menu Overlay -->
+<div id="startMenu" class="overlay show" role="dialog" aria-modal="true">
+  <div class="panel start-square">
+    <h2 class="title">Octo Swinger</h2>
+
+    <div class="score-cards">
+      <div class="score-card">
+        <div class="label">Best Score</div>
+        <div id="bestScoreLabel" class="score-big">0</div>
       </div>
-      <div class="controls-bar">
-        <button id="startBtn" class="btn-ui">Start</button>
-        <button id="openScorecardBtn" class="btn-ui">Download Score</button>
+      <div class="score-card">
+        <div class="label">Last Score</div>
+        <div id="lastScoreLabel" class="score-big">0</div>
       </div>
     </div>
+
+    <div class="controls-bar controls-square">
+      <button id="startBtn" class="btn-ui">Start</button>
+      <button id="openScorecardBtn" class="btn-ui">Download Score</button>
+    </div>
   </div>
+</div>
+
 
   <!-- Scorecard Overlay -->
   <div id="scorecard" class="overlay" role="dialog" aria-modal="true">
@@ -722,6 +725,7 @@
   </script>
 </body>
 </html>
+
 
 
 
