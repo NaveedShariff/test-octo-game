@@ -639,19 +639,12 @@
       glow.addColorStop(1,'rgba(255,120,40,0.25)');
       ctx.fillStyle=glow; ctx.fillRect(0, lavaTop-40, vw, 50);
 
-      // Player (spidey)
+      // Player (spidey image) — increased size by 4px
       const px = player.x - camX, py = player.y;
-      ctx.save();
-      // body
-      ctx.fillStyle='white';
-      ctx.beginPath(); ctx.arc(px, py, player.r, 0, Math.PI*2); ctx.fill();
-      // suit accent
-      ctx.strokeStyle=getComputedStyle(document.documentElement).getPropertyValue('--accent');
-      ctx.lineWidth=3; ctx.beginPath(); ctx.arc(px, py, player.r-3, 0, Math.PI*2); ctx.stroke();
-      // direction indicator
-      ctx.fillStyle=getComputedStyle(document.documentElement).getPropertyValue('--accent');
-      ctx.beginPath(); ctx.arc(px + Math.sign(player.vx||1)*6, py-2, 2, 0, Math.PI*2); ctx.fill();
-      ctx.restore();
+      const spideyImg = new Image();
+      spideyImg.src = "player.png";
+      const size = player.r * 3 + 4; // original size + 4px
+      ctx.drawImage(spideyImg, px - size / 2, py - size / 2, size, size);
 
       // Ground fade at bottom
       const grd=ctx.createLinearGradient(0, vh-120, 0, vh);
@@ -667,3 +660,4 @@
   </script>
 </body>
 </html>
+
