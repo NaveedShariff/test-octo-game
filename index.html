@@ -60,6 +60,68 @@
     @media (min-width: 900px){
       .hint{font-size:13px}
     }
+        /* Square start menu layout */
+#startMenu .panel.start-square{
+  width: min(92vw, 300px);
+  height: min(92vw, 300px); /* square */
+  display: grid;
+  grid-template-rows: auto 1fr auto; /* title, scores, buttons */
+  gap: 16px;
+  padding: 24px;
+}
+
+/* Title centered */
+#startMenu .panel.start-square .title{
+  margin: 0;
+  text-align: center;
+  font-size: 26px;
+  font-weight: 800;
+}
+
+/* Two big score blocks centered in the square */
+#startMenu .panel.start-square .score-cards{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;      /* vertical center */
+  justify-items: center;    /* horizontal center in each cell */
+  gap: 10px;
+}
+
+#startMenu .panel.start-square .score-card{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+#startMenu .panel.start-square .label{
+  font-size: 14px;
+  opacity: .9;
+  margin: 0;
+}
+
+#startMenu .panel.start-square .score-big{
+  font-size: 44px;    /* bigger */
+  font-weight: 900;
+}
+
+/* Buttons neatly inside the square */
+#startMenu .panel.start-square .controls-square{
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+  }
+
+  /* Make buttons a bit larger and consistent */
+  #startMenu .panel.start-square .btn-ui{
+    min-width: 160px;
+    height: 44px;
+    padding: 0 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
   </style>
 </head>
 <body>
@@ -660,6 +722,7 @@
   </script>
 </body>
 </html>
+
 
 
 
