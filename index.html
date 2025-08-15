@@ -60,7 +60,7 @@
     @media (min-width: 900px){
       .hint{font-size:13px}
     }
-        /* Square start menu layout */
+    /* Square start menu layout */
 #startMenu .panel.start-square{
   width: min(92vw, 300px);
   height: min(92vw, 300px); /* square */
@@ -122,6 +122,194 @@
     align-items: center;
     justify-content: center;
   }
+/* Square scorecard layout */
+#scorecard .panel.score-square{
+  width: min(92vw, 520px);
+  height: min(92vw, 520px);       /* make it square */
+  display: grid;
+  grid-template-rows: auto 1fr auto auto; /* title, main, message, buttons */
+  gap: 16px;
+  padding: 24px;
+  }
+
+  /* Title centered */
+  #scorecard .panel.score-square .title{
+    margin: 0;
+    text-align: center;
+    font-size: 45px;
+    font-weight: 800;
+  }
+
+  /* Two-column main area (left: badge+input, right: high score) */
+  #scorecard .panel.score-square .score-main{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;      /* vertical centering in the square */
+    justify-items: center;    /* horizontal centering per cell */
+    gap: 16px;
+  }
+
+  /* Left side: badge + input stacked */
+  #scorecard .panel.score-square .left{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    width: 100%;
+  }
+
+  #scorecard .panel.score-square .badge-img{
+    width: 150px;
+    height: 150px;
+    object-fit: contain;
+    image-rendering: auto;
+  }
+
+  /* Make input comfortable inside the square */
+  #scorecard .panel.score-square .input{
+    width: min(100%, 260px);
+  }
+
+  /* Right side: big high score number */
+  #scorecard .panel.score-square .right{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+
+  #scorecard .panel.score-square .score-big{
+    font-size: 48px;  /* bigger, can adjust */
+    font-weight: 900;
+  }
+
+  /* Badge message centered under main grid */
+  #scorecard .panel.score-square .badge-msg{
+    text-align: center;
+    opacity: .9;
+    min-height: 28px; /* reserve space so layout doesn't jump */
+  }
+
+  /* Bottom buttons inside the square */
+  #scorecard .panel.score-square .controls-square{
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  #scorecard .panel.score-square .btn-ui{
+    min-width: 160px;
+    height: 44px;
+    padding: 0 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  /* Square scorecard layout */
+  #scorecard .panel.score-square{
+    width: min(92vw, 400px);
+    height: min(92vw, 400px);
+    display: grid;
+    grid-template-rows: auto 1fr auto auto; /* title, main, input, buttons */
+    gap: 16px;
+    padding: 24px;
+  }
+
+  /* Title centered */
+  #scorecard .panel.score-square .title{
+    margin: 0;
+    text-align: center;
+    font-size: 24px;
+    font-weight: 800;
+  }
+
+  /* Two-column main area (left: badge+message, right: high score) */
+  #scorecard .panel.score-square .score-main{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    justify-items: center;
+    gap: 16px;
+  }
+
+  /* Left side: badge + message stacked */
+  #scorecard .panel.score-square .left{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+  }
+
+  #scorecard .panel.score-square .badge-img{
+    width: 120px;
+    height: 120px;
+    object-fit: contain;
+    image-rendering: auto;
+  }
+
+  #scorecard .panel.score-square .badge-msg{
+    text-align: center;
+    opacity: .95;
+    min-height: 28px; /* reserve space so layout doesn't jump */
+  }
+
+  /* Right side: big high score number */
+  #scorecard .panel.score-square .right{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+
+  #scorecard .panel.score-square .score-big{
+    font-size: 48px;
+    font-weight: 900;
+  }
+
+  /* Input row ABOVE buttons */
+  #scorecard .panel.score-square .input-row{
+    display: flex;
+    justify-content: center;
+  }
+
+  #scorecard .panel.score-square .input{
+    width: min(100%, 300px);
+  }
+
+  /* Grey placeholder text for clarity */
+  #scorecard .panel.score-square .input::placeholder{
+    color: rgba(255,255,255,.6);
+  }
+
+  /* Accessibility helper to hide labels visually but keep for screen readers */
+  .visually-hidden{
+    position: absolute !important;
+    height: 1px; width: 1px;
+    overflow: hidden;
+    clip: rect(1px, 1px, 1px, 1px);
+    white-space: nowrap;
+  }
+
+  /* Bottom buttons inside the square */
+  #scorecard .panel.score-square .controls-square{
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  #scorecard .panel.score-square .btn-ui{
+    min-width: 160px;
+    height: 44px;
+    padding: 0 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+
   </style>
 </head>
 <body>
@@ -137,58 +325,61 @@
   <!-- Top-right Menu button -->
   <button id="openMenuBtn" class="btn btn-ui">Menu</button>
 
-<!-- Start Menu Overlay -->
-<div id="startMenu" class="overlay show" role="dialog" aria-modal="true">
-  <div class="panel start-square">
-    <h2 class="title">Octo Swinger</h2>
+  <!-- Start Menu Overlay -->
+  <div id="startMenu" class="overlay show" role="dialog" aria-modal="true">
+    <div class="panel start-square">
+      <h2 class="title">Octo Swinger</h2>
 
-    <div class="score-cards">
-      <div class="score-card">
-        <div class="label">Best Score</div>
-        <div id="bestScoreLabel" class="score-big">0</div>
+      <div class="score-cards">
+        <div class="score-card">
+          <div class="label">Best Score</div>
+          <div id="bestScoreLabel" class="score-big">0</div>
+        </div>
+        <div class="score-card">
+          <div class="label">Last Score</div>
+          <div id="lastScoreLabel" class="score-big">0</div>
+        </div>
       </div>
-      <div class="score-card">
-        <div class="label">Last Score</div>
-        <div id="lastScoreLabel" class="score-big">0</div>
-      </div>
-    </div>
 
-    <div class="controls-bar controls-square">
-      <button id="startBtn" class="btn-ui">Start</button>
-      <button id="openScorecardBtn" class="btn-ui">Download Score</button>
+      <div class="controls-bar controls-square">
+        <button id="startBtn" class="btn-ui">Start</button>
+        <button id="openScorecardBtn" class="btn-ui">Download Score</button>
+      </div>
     </div>
   </div>
-</div>
-
 
   <!-- Scorecard Overlay -->
   <div id="scorecard" class="overlay" role="dialog" aria-modal="true">
-    <div class="panel">
-      <h2>Score Card</h2>
-      <div class="row">
-        <div class="col" style="display:flex;align-items:center;gap:12px">
-          <img id="badgePreview" alt="badge" style="width:84px;height:84px;object-fit:contain;image-rendering:auto"/>
-          <div style="display:flex;flex-direction:column;gap:8px">
-            <label class="label" for="handleInput">X (Twitter) Handle</label>
-            <input id="handleInput" class="input" placeholder="@yourhandle"/>
-          </div>
+    <div class="panel score-square">
+      <h2 class="title">Score Card</h2>
+
+      <!-- Main grid: Left (badge + message), Right (High Score) -->
+      <div class="score-main">
+        <div class="left">
+          <img id="badgePreview" alt="badge" class="badge-img"/>
+          <div id="badgeMessage" class="badge-msg"></div> <!-- message directly under the character -->
         </div>
-        <div class="col" style="display:flex;align-items:center;justify-content:flex-end">
-          <div>
-            <div class="label">High Score</div>
-            <div id="highScoreValue" style="font-size:32px;font-weight:900;text-align:right">0</div>
-          </div>
+
+        <div class="right">
+          <div class="label">High Score</div>
+          <div id="highScoreValue" class="score-big">0</div>
         </div>
       </div>
-      <div style="margin-top:14px;text-align:center">
-        <div id="badgeMessage" style="opacity:.9"></div>
+
+      <!-- Input row ABOVE the buttons -->
+      <div class="input-row">
+        <label class="visually-hidden" for="handleInput">Enter your X handle</label>
+        <input id="handleInput" class="input" placeholder="Enter your X handle here!"/>
       </div>
-      <div class="controls-bar">
-        <button id="downloadPngBtn" class="btn-ui">Download PNG</button>
+
+      <!-- Bottom buttons -->
+      <div class="controls-bar controls-square">
         <button id="closeScorecardBtn" class="btn-ui">Close</button>
+        <button id="downloadPngBtn" class="btn-ui">Download PNG</button>
       </div>
     </div>
   </div>
+
 
   <!-- Parallax clouds purely cosmetic -->
   <div class="clouds" aria-hidden="true">
@@ -448,13 +639,14 @@
     }
 
     function computeBadgeForScore(s){
-      if(s<=200) return {name:'toddler', path:'action-icons/toddler.png', msg:'You are a toddler, push yourself harder'};
-      if(s<=500) return {name:'ninja', path:'action-icons/ninja.png', msg:'you have a good ninja stealth'};
-      if(s<=700) return {name:'samurai', path:'action-icons/samurai.png', msg:'No end but for a Samurai'};
-      if(s<=1500) return {name:'spartan', path:'action-icons/spartan.png', msg:'I am a Spartan'};
-      if(s<=10000) return {name:'missiah', path:'action-icons/missiah.png', msg:'you are the savior but this level  is not the end!'};
-      return {name:'god', path:'action-icons/god.png', msg:'congratulations you are appointed as God'};
+      if(s<=200)   return {name:'toddler', path:'action-icons/toddler.png', msg:'You are a Toddler'};
+      if(s<=500)   return {name:'ninja',   path:'action-icons/ninja.png',   msg:'You have good ninja stealth.'};
+      if(s<=700)   return {name:'samurai', path:'action-icons/samurai.png', msg:'You are a Samurai.'};
+      if(s<=1500)  return {name:'spartan', path:'action-icons/spartan.png', msg:'You are a Spartan.'};
+      if(s<=10000) return {name:'missiah', path:'action-icons/missiah.png', msg:'You are Missiah'};
+      return {name:'god', path:'action-icons/god.png', msg:'Congratulations, you are a God.'};
     }
+
 
     function openScorecard(){
       const badge=computeBadgeForScore(highestScore);
@@ -466,39 +658,100 @@
     }
 
     function closeScorecard(){ scorecard.classList.remove('show'); }
-
     function downloadScorecardPng(){
-      const w=900, h=500;
-      const c=document.createElement('canvas');
-      c.width=w; c.height=h; const g=c.getContext('2d');
-      // background card
-      g.fillStyle = '#0e1a2b'; g.fillRect(0,0,w,h);
-      // header
-      g.fillStyle='white'; g.font='bold 28px Inter, Arial'; g.fillText('Spider Swinger — Score Card', 24, 48);
-      // score
-      g.font='bold 56px Inter, Arial'; g.fillText(String(highestScore), w-24 - g.measureText(String(highestScore)).width, 110);
-      g.font='16px Inter, Arial'; g.fillText('High Score', w-24 - g.measureText('High Score').width, 82);
-      // handle
-      const handle = (handleInput.value||'').trim() || '@anonymous';
-      g.font='18px Inter, Arial'; g.fillText(`Handle: ${handle}`, 24, 86);
-      // left icon
-      const badge=computeBadgeForScore(highestScore);
-      const img=new Image();
-      img.onload=()=>{
-        const size=160; g.drawImage(img, 24, 120, size, size);
-        // bottom-center message
-        g.font='20px Inter, Arial';
-        const msg=badge.msg;
-        const tw=g.measureText(msg).width;
-        g.fillText(msg, (w-tw)/2, h-40);
-        // save
-        const a=document.createElement('a');
-        a.download='scorecard.png';
-        a.href=c.toDataURL('image/png');
-        a.click();
-      };
-      img.src = badge.path;
-    }
+  const badge = computeBadgeForScore(highestScore);
+  const handleRaw = (handleInput.value || '').trim();
+  const handle = handleRaw ? (handleRaw.startsWith('@') ? handleRaw : '@' + handleRaw) : '@anonymous';
+
+  // If toddler (0–200), use provided card.png as background
+  if (badge.name === 'toddler') {
+    const base = new Image();
+    base.onload = () => {
+      const w = base.naturalWidth || 900;
+      const h = base.naturalHeight || 500;
+
+      const c = document.createElement('canvas');
+      c.width = w; c.height = h;
+      const g = c.getContext('2d');
+
+      // Draw the base card
+      g.drawImage(base, 0, 0, w, h);
+
+      // Prepare text drawing (right-aligned)
+      const pad = 28;
+      g.fillStyle = '#ffffff';
+      g.textAlign = 'right';
+      g.textBaseline = 'top';
+
+      // Top-right: "High Score" label + value
+      g.font = '600 20px Inter, Arial, sans-serif';
+      g.fillText('High Score', w - pad, pad);
+
+      g.font = '900 56px Inter, Arial, sans-serif';
+      g.fillText(String(highestScore), w - pad, pad + 26); // value just under label
+
+      // Bottom-right: X handle
+      g.textBaseline = 'alphabetic';
+      g.font = '600 22px Inter, Arial, sans-serif';
+      g.fillText(handle, w - pad, h - pad);
+
+      // Download
+      const a = document.createElement('a');
+      a.download = 'scorecard.png';
+      a.href = c.toDataURL('image/png');
+      a.click();
+    };
+    base.src = 'card.png'; // <-- ensure this file is in the same folder as your HTML
+    return;
+  }
+
+  // Fallback for non-toddler badges: keep your previous simple card generator
+  const w = 900, h = 500;
+  const c = document.createElement('canvas');
+  c.width = w; c.height = h;
+  const g = c.getContext('2d');
+
+  // background card
+  g.fillStyle = '#0e1a2b'; g.fillRect(0,0,w,h);
+
+  // header
+  g.fillStyle = 'white';
+  g.font = 'bold 28px Inter, Arial, sans-serif';
+  g.fillText('Spider Swinger — Score Card', 24, 28);
+
+  // score (top-right)
+  g.textAlign = 'right';
+  g.textBaseline = 'top';
+  g.font = '600 16px Inter, Arial, sans-serif';
+  g.fillText('High Score', w - 24, 28);
+  g.font = '900 56px Inter, Arial, sans-serif';
+  g.fillText(String(highestScore), w - 24, 50);
+
+  // handle (bottom-right)
+  g.textAlign = 'right';
+  g.textBaseline = 'alphabetic';
+  g.font = '600 18px Inter, Arial, sans-serif';
+  g.fillText(handle, w - 24, h - 24);
+
+  // left icon + badge message
+  const img = new Image();
+  img.onload = () => {
+    const size = 160; 
+    g.drawImage(img, 24, 120, size, size);
+
+    // message centered bottom
+    g.textAlign = 'center';
+    g.font = '500 20px Inter, Arial, sans-serif';
+    g.fillText(badge.msg, w/2, h - 40);
+
+    const a = document.createElement('a');
+    a.download = 'scorecard.png';
+    a.href = c.toDataURL('image/png');
+    a.click();
+  };
+  img.src = badge.path;
+}
+
 
     // Buttons
     startBtn.addEventListener('click',()=>{ hideMenu(); restart(); gameActive=true; });
@@ -722,11 +975,7 @@
     placePlayerOnFirstBuilding();
     showMenu();
     requestAnimationFrame(step);
+    
   </script>
 </body>
 </html>
-
-
-
-
-
