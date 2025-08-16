@@ -663,12 +663,65 @@ function downloadScorecardPng(){
   const handleRaw = (handleInput.value || '').trim();
   const handle = handleRaw ? (handleRaw.startsWith('@') ? handleRaw : '@' + handleRaw) : '@anonymous';
 
-  // If toddler (0–200), use the provided card.png as base and place text by your coords
+  // Helper: fit text inside a rectangle (auto font size down) and draw
+  function drawFittedText(g, text, rect, opts = {}){
+    const {
+      weight = '900',
+      preferredSize = 64,
+      minSize = 18,
+      family = 'Inter, Arial, sans-serif',
+      align = 'right',       // 'left' | 'center' | 'right'
+      vAlign = 'top',        // 'top' | 'middle' | 'bottom'
+      padding = 12,
+      baseline = 'alphabetic',
+      lineHeight = 1.0
+    } = opts;
+
+    let fontSize = preferredSize;
+    g.textAlign = align;
+    g.textBaseline = baseline;
+    g.fillStyle = '#ffffff';
+
+    // Try to fit by width, then clamp by height
+    const maxWidth = rect.w - padding*2;
+    const maxHeight = rect.h - padding*2;
+
+    // shrink until fits width and height
+    while (fontSize >= minSize){
+      g.font = `${weight} ${fontSize}px ${family}`;
+      const width = g.measureText(text).width;
+      const height = fontSize * lineHeight;
+      if (width <= maxWidth && height <= maxHeight) break;
+      fontSize -= 1;
+    }
+
+    // Final positions
+    let x;
+    if (align === 'left') x = rect.x + padding;
+    else if (align === 'center') x = rect.x + rect.w/2;
+    else x = rect.x + rect.w - padding; // right
+
+    let y; // use top/middle/bottom inside the box
+    if (vAlign === 'top'){
+      g.textBaseline = 'top';
+      y = rect.y + padding;
+    } else if (vAlign === 'middle'){
+      g.textBaseline = 'middle';
+      y = rect.y + rect.h/2;
+    } else {
+      g.textBaseline = 'bottom';
+      y = rect.y + rect.h - padding;
+    }
+
+    g.fillText(text, x, y);
+  }
+
+  // TODDLER: use provided card.png and draw within exact boxes
   if (badge.name === 'toddler') {
     const base = new Image();
     base.onload = () => {
-      const w = base.naturalWidth || 900;
-      const h = base.naturalHeight || 500;
+      const w = base.naturalWidth;
+      const h = base.naturalHeight;
 
       const c = document.createElement('canvas');
       c.width = w; c.height = h;
@@ -677,52 +730,41 @@ function downloadScorecardPng(){
       // Draw base card
       g.drawImage(base, 0, 0, w, h);
 
-      // ----- HIGH SCORE at given point (pct: x=87.2768, y=45.2884) -----
-      const hsPx = (87.2768 / 100) * w;
-      const hsPy = (45.2884 / 100) * h;
+      // Boxes (exact pixels as requested)
+      const HS_BOX = { x: 1176, y: 70,  w: 378,  h: 272 };   // High Score
+      const HANDLE_BOX = { x: 644, y: 461, w: 1000, h: 121 }; // X handle
 
-      // Label slightly above, value centered on the point
-      g.fillStyle = '#fd7102';
-      g.textAlign = 'center';
-      g.textBaseline = 'middle';
+      // Draw "High Score" label (smaller) at top of HS_BOX
+      drawFittedText(g, 'High Score', HS_BOX, {
+        weight: '600',
+        preferredSize: 36,
+        minSize: 18,
+        align: 'right',
+        vAlign: 'top',
+        padding: 16
+      });
 
-      g.font = '600 20px Inter, Arial, sans-serif';
-      g.fillText('High Score', hsPx, hsPy - 26);
+      // Draw the numeric score (big) in HS_BOX, below the label
+      // Use a sub-rect (same x/w, lower y) so it stacks under the label.
+      const SCORE_SUB = { x: HS_BOX.x, y: HS_BOX.y + 46, w: HS_BOX.w, h: HS_BOX.h - 46 };
+      drawFittedText(g, String(highestScore), SCORE_SUB, {
+        weight: '900',
+        preferredSize: 112,
+        minSize: 28,
+        align: 'right',
+        vAlign: 'top',
+        padding: 16
+      });
 
-      g.font = '900 56px Inter, Arial, sans-serif';
-      g.fillText(String(highestScore), hsPx, hsPy + 10);
-
-      // ----- X HANDLE inside the given box (two pct points) -----
-      // p1 (50.372, 75.1825), p2 (85.4911, 87.6164)
-      const x1 = (50.372 / 100) * w;
-      const y1 = (75.1825 / 100) * h;
-      const x2 = (85.4911 / 100) * w;
-      const y2 = (87.6164 / 100) * h;
-
-      const pad = Math.max(8, Math.min(w, h) * 0.015);   // responsive padding
-      const boxW = Math.max(0, x2 - x1 - pad * 2);
-      const boxH = Math.max(0, y2 - y1 - pad * 2);
-
-      // Fit handle text into width (shrink font if needed)
-      let fontSize = Math.floor(Math.min(24, boxH * 0.7));   // start size relative to box height
-      g.textAlign = 'left';
-      g.textBaseline = 'alphabetic';
-      g.fillStyle = '#fd7102';
-
-      const fitHandle = (txt) => {
-        while (fontSize > 12) {
-          g.font = `600 ${fontSize}px Inter, Arial, sans-serif`;
-          const tw = g.measureText(txt).width;
-          if (tw <= boxW) break;
-          fontSize -= 1;
-        }
-      };
-      fitHandle(handle);
-
-      // Draw handle at bottom-left inside the box with padding
-      const textX = x1 + pad;
-      const textY = y2 - pad;
-      g.fillText(handle, textX, textY);
+      // Draw handle in HANDLE_BOX (right/bottom aligned looks clean for bottom-right area)
+      drawFittedText(g, handle, HANDLE_BOX, {
+        weight: '700',
+        preferredSize: 54,
+        minSize: 22,
+        align: 'right',
+        vAlign: 'bottom',
+        padding: 18
+      });
 
       // Download
       const a = document.createElement('a');
@@ -730,11 +772,11 @@ function downloadScorecardPng(){
       a.href = c.toDataURL('image/png');
       a.click();
     };
-    base.src = 'card.png';   // ensure card.png is alongside your HTML
+    base.src = 'card.png'; // ensure card.png is in the same folder
     return;
   }
 
-  // --- Non-toddler fallback: your existing simple generator ---
+  // NON-TODDLER: keep your previous fallback card (simple generator)
   const w = 900, h = 500;
   const c = document.createElement('canvas');
   c.width = w; c.height = h;
@@ -746,7 +788,7 @@ function downloadScorecardPng(){
   // header
   g.fillStyle = 'white';
   g.font = 'bold 28px Inter, Arial, sans-serif';
-  g.fillText('Spider Swinger — Score Card', 24, 28);
+  g.fillText('Octo Swinger — Score Card', 24, 28);
 
   // score (top-right)
   g.textAlign = 'right';
@@ -757,11 +799,10 @@ function downloadScorecardPng(){
   g.fillText(String(highestScore), w - 24, 50);
 
   // handle (bottom-right)
+  g.textAlign = 'right';
   g.textBaseline = 'alphabetic';
   g.font = '600 18px Inter, Arial, sans-serif';
-  const handleRaw2 = (handleInput.value || '').trim();
-  const handle2 = handleRaw2 ? (handleRaw2.startsWith('@') ? handleRaw2 : '@' + handleRaw2) : '@anonymous';
-  g.fillText(handle2, w - 24, h - 24);
+  g.fillText(handle, w - 24, h - 24);
 
   // left icon + badge message
   const img = new Image();
@@ -781,6 +822,7 @@ function downloadScorecardPng(){
   };
   img.src = badge.path;
 }
+
 
     // Buttons
     startBtn.addEventListener('click',()=>{ hideMenu(); restart(); gameActive=true; });
@@ -1008,6 +1050,7 @@ function downloadScorecardPng(){
   </script>
 </body>
 </html>
+
 
 
 
