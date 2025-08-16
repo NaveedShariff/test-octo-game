@@ -782,55 +782,6 @@ function downloadScorecardPng(){
   img.src = badge.path;
 }
 
-
-  // Fallback for non-toddler badges: keep your previous simple card generator
-  const w = 900, h = 500;
-  const c = document.createElement('canvas');
-  c.width = w; c.height = h;
-  const g = c.getContext('2d');
-
-  // background card
-  g.fillStyle = '#0e1a2b'; g.fillRect(0,0,w,h);
-
-  // header
-  g.fillStyle = 'white';
-  g.font = 'bold 28px Inter, Arial, sans-serif';
-  g.fillText('Spider Swinger — Score Card', 24, 28);
-
-  // score (top-right)
-  g.textAlign = 'right';
-  g.textBaseline = 'top';
-  g.font = '600 16px Inter, Arial, sans-serif';
-  g.fillText('High Score', w - 24, 28);
-  g.font = '900 56px Inter, Arial, sans-serif';
-  g.fillText(String(highestScore), w - 24, 50);
-
-  // handle (bottom-right)
-  g.textAlign = 'right';
-  g.textBaseline = 'alphabetic';
-  g.font = '600 18px Inter, Arial, sans-serif';
-  g.fillText(handle, w - 24, h - 24);
-
-  // left icon + badge message
-  const img = new Image();
-  img.onload = () => {
-    const size = 160; 
-    g.drawImage(img, 24, 120, size, size);
-
-    // message centered bottom
-    g.textAlign = 'center';
-    g.font = '500 20px Inter, Arial, sans-serif';
-    g.fillText(badge.msg, w/2, h - 40);
-
-    const a = document.createElement('a');
-    a.download = 'scorecard.png';
-    a.href = c.toDataURL('image/png');
-    a.click();
-  };
-  img.src = badge.path;
-}
-
-
     // Buttons
     startBtn.addEventListener('click',()=>{ hideMenu(); restart(); gameActive=true; });
     openMenuBtn.addEventListener('click',()=>{ showMenu(); });
