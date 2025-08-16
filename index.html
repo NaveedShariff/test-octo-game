@@ -639,11 +639,11 @@
     }
 
     function computeBadgeForScore(s){
-      if(s<=200)   return {name:'toddler', path:'action-icons/toddler.png', msg:'You are a Toddler'};
-      if(s<=500)   return {name:'ninja',   path:'action-icons/ninja.png',   msg:'You have good ninja stealth.'};
-      if(s<=700)   return {name:'samurai', path:'action-icons/samurai.png', msg:'You are a Samurai.'};
-      if(s<=1500)  return {name:'spartan', path:'action-icons/spartan.png', msg:'You are a Spartan.'};
-      if(s<=10000) return {name:'missiah', path:'action-icons/missiah.png', msg:'You are Missiah'};
+      if(s<=500)   return {name:'toddler', path:'action-icons/toddler.png', msg:'You are a Toddler'};
+      if(s<=2000)   return {name:'ninja',   path:'action-icons/ninja.png',   msg:'You have good ninja stealth.'};
+      if(s<=4000)   return {name:'samurai', path:'action-icons/samurai.png', msg:'You are a Samurai.'};
+      if(s<=6000)  return {name:'spartan', path:'action-icons/spartan.png', msg:'You are a Spartan.'};
+      if(s<=8000) return {name:'messiah', path:'action-icons/missiah.png', msg:'You are Messiah'};
       return {name:'god', path:'action-icons/god.png', msg:'Congratulations, you are a God.'};
     }
 
@@ -663,6 +663,17 @@ function downloadScorecardPng(){
   const handleRaw = (handleInput.value || '').trim();
   const handle = handleRaw ? (handleRaw.startsWith('@') ? handleRaw : '@' + handleRaw) : '@anonymous';
 
+  // Map badge -> card image (supports both "messiah" and your earlier "missiah")
+  const CARD_BY_BADGE = {
+    toddler: 'toddler-card.png',
+    ninja: 'ninja-card.png',
+    samurai: 'samurai-card.png',
+    spartan: 'spartan-card.png',
+    messiah: 'messiah-card.png',
+    missiah: 'messiah-card.png',
+    god: 'god-card.png'
+  };
+
   // Helper: fit text inside a rectangle (auto font size down) and draw
   function drawFittedText(g, text, rect, opts = {}){
     const {
@@ -670,8 +681,8 @@ function downloadScorecardPng(){
       preferredSize = 64,
       minSize = 18,
       family = 'Inter, Arial, sans-serif',
-      align = 'center',       // 'left' | 'center' | 'right'
-      vAlign = 'middle',        // 'top' | 'middle' | 'bottom'
+      align = 'center',    // 'left' | 'center' | 'right'
+      vAlign = 'middle',   // 'top' | 'middle' | 'bottom'
       padding = 12,
       baseline = 'alphabetic',
       lineHeight = 1.0
@@ -680,13 +691,11 @@ function downloadScorecardPng(){
     let fontSize = preferredSize;
     g.textAlign = align;
     g.textBaseline = baseline;
-    g.fillStyle = '#222222';
+    g.fillStyle = '#222222'; // keep the same dark text color you used
 
-    // Try to fit by width, then clamp by height
     const maxWidth = rect.w - padding*2;
     const maxHeight = rect.h - padding*2;
 
-    // shrink until fits width and height
     while (fontSize >= minSize){
       g.font = `${weight} ${fontSize}px ${family}`;
       const width = g.measureText(text).width;
@@ -695,105 +704,90 @@ function downloadScorecardPng(){
       fontSize -= 1;
     }
 
-    // Final positions
     let x;
     if (align === 'left') x = rect.x + padding;
     else if (align === 'center') x = rect.x + rect.w/2;
-    else x = rect.x + rect.w - padding; // right
+    else x = rect.x + rect.w - padding;
 
-    let y; // use top/middle/bottom inside the box
-    if (vAlign === 'top'){
-      g.textBaseline = 'top';
-      y = rect.y + padding;
-    } else if (vAlign === 'middle'){
-      g.textBaseline = 'middle';
-      y = rect.y + rect.h/2;
-    } else {
-      g.textBaseline = 'bottom';
-      y = rect.y + rect.h - padding;
-    }
+    let y;
+    if (vAlign === 'top'){ g.textBaseline = 'top'; y = rect.y + padding; }
+    else if (vAlign === 'middle'){ g.textBaseline = 'middle'; y = rect.y + rect.h/2; }
+    else { g.textBaseline = 'bottom'; y = rect.y + rect.h - padding; }
 
     g.fillText(text, x, y);
   }
 
- // TODDLER: use provided card.png and draw within exact boxes
-if (badge.name === 'toddler') {
-  const base = new Image();
-  base.onload = () => {
-    const w = base.naturalWidth;
-    const h = base.naturalHeight;
+  // If we have a matching card image for this badge, use it.
+  const cardSrc = CARD_BY_BADGE[badge.name];
+  if (cardSrc){
+    const base = new Image();
+    base.onload = () => {
+      const w = base.naturalWidth;
+      const h = base.naturalHeight;
 
-    const c = document.createElement('canvas');
-    c.width = w; c.height = h;
-    const g = c.getContext('2d');
+      const c = document.createElement('canvas');
+      c.width = w; c.height = h;
+      const g = c.getContext('2d');
 
-    // Draw base card
-    g.drawImage(base, 0, 0, w, h);
+      // Draw base card
+      g.drawImage(base, 0, 0, w, h);
 
-    // --- EXACT AREAS (as per your diagram) ---
-    // High Score bubble
-    const HS_BOX      = { x: 1176, y: 70,  w: 378,  h: 212 };   // center the label+value here
-    // X handle ribbon
-    const HANDLE_BOX  = { x:  644, y: 461, w: 1000, h: 121 };   // start text from the LEFT here
+      // EXACT AREAS (unchanged)
+      const HS_BOX     = { x: 1176, y: 70,  w: 378,  h: 212 };  // High Score area
+      const HANDLE_BOX = { x:  644, y: 461, w: 1000, h: 121 };  // X handle area
 
-    // Label "High Score" – top/center inside HS_BOX
-    drawFittedText(g, 'High Score', HS_BOX, {
-      weight: '700',
-      preferredSize: 40,
-      minSize: 20,
-      align: 'center',
-      vAlign: 'top',
-      padding: 22
-    });
+      // "High Score" label (top/center in HS_BOX)
+      drawFittedText(g, 'High Score', HS_BOX, {
+        weight: '700',
+        preferredSize: 40,
+        minSize: 20,
+        align: 'center',
+        vAlign: 'top',
+        padding: 22
+      });
 
-    // Numeric score – centered below the label inside HS_BOX
-    // (Use a sub-rect to place number under the label while staying inside the same bubble)
-    const SCORE_SUB = { x: HS_BOX.x, y: HS_BOX.y + 78, w: HS_BOX.w, h: HS_BOX.h - 78 };
-    drawFittedText(g, String(highestScore), SCORE_SUB, {
-      weight: '900',
-      preferredSize: 112,
-      minSize: 28,
-      align: 'center',
-      vAlign: 'middle',
-      padding: 20
-    });
+      // Numeric high score (centered below label in HS_BOX)
+      const SCORE_SUB = { x: HS_BOX.x, y: HS_BOX.y + 78, w: HS_BOX.w, h: HS_BOX.h - 78 };
+      drawFittedText(g, String(highestScore), SCORE_SUB, {
+        weight: '900',
+        preferredSize: 112,
+        minSize: 28,
+        align: 'center',
+        vAlign: 'middle',
+        padding: 20
+      });
 
-    // X handle – MUST START FROM THE LEFT inside HANDLE_BOX
-    drawFittedText(g, handle, HANDLE_BOX, {
-      weight: '700',
-      preferredSize: 54,
-      minSize: 22,
-      align: 'left',     // << start at left edge of the box
-      vAlign: 'middle',
-      padding: 28        // inner margin so it sits nicely inside the rounded pill
-    });
+      // X handle (must start from LEFT in HANDLE_BOX)
+      drawFittedText(g, handle, HANDLE_BOX, {
+        weight: '700',
+        preferredSize: 54,
+        minSize: 22,
+        align: 'left',
+        vAlign: 'middle',
+        padding: 28
+      });
 
-    // Download
-    const a = document.createElement('a');
-    a.download = 'scorecard.png';
-    a.href = c.toDataURL('image/png');
-    a.click();
-  };
-  base.src = 'toddler-card.png';
-  return;
-}
+      // Download
+      const a = document.createElement('a');
+      a.download = 'scorecard.png';
+      a.href = c.toDataURL('image/png');
+      a.click();
+    };
+    base.src = cardSrc; // e.g., 'ninja-card.png'
+    return;
+  }
 
-
-  // NON-TODDLER: keep your previous fallback card (simple generator)
+  // Fallback (no matching card): simple generator
   const w = 900, h = 500;
   const c = document.createElement('canvas');
   c.width = w; c.height = h;
   const g = c.getContext('2d');
 
-  // background card
   g.fillStyle = '#0e1a2b'; g.fillRect(0,0,w,h);
-
-  // header
   g.fillStyle = 'white';
   g.font = 'bold 28px Inter, Arial, sans-serif';
   g.fillText('Octo Swinger — Score Card', 24, 28);
 
-  // score (top-right)
   g.textAlign = 'right';
   g.textBaseline = 'top';
   g.font = '600 16px Inter, Arial, sans-serif';
@@ -801,29 +795,25 @@ if (badge.name === 'toddler') {
   g.font = '900 56px Inter, Arial, sans-serif';
   g.fillText(String(highestScore), w - 24, 50);
 
-  // handle (bottom-right)
   g.textAlign = 'right';
   g.textBaseline = 'alphabetic';
   g.font = '600 18px Inter, Arial, sans-serif';
   g.fillText(handle, w - 24, h - 24);
 
-  // left icon + badge message
   const img = new Image();
   img.onload = () => {
     const size = 160; 
     g.drawImage(img, 24, 120, size, size);
-
-    // message centered bottom
     g.textAlign = 'center';
     g.font = '500 20px Inter, Arial, sans-serif';
-    g.fillText(badge.msg, w/2, h - 40);
+    g.fillText(computeBadgeForScore(highestScore).msg, w/2, h - 40);
 
     const a = document.createElement('a');
     a.download = 'scorecard.png';
     a.href = c.toDataURL('image/png');
     a.click();
   };
-  img.src = badge.path;
+  img.src = computeBadgeForScore(highestScore).path;
 }
 
 
@@ -1053,6 +1043,7 @@ if (badge.name === 'toddler') {
   </script>
 </body>
 </html>
+
 
 
 
