@@ -659,20 +659,19 @@
 
     function closeScorecard(){ scorecard.classList.remove('show'); }
 function downloadScorecardPng(){
-  const badge = computeBadgeForScore(highestScore);
+  const s = highestScore;
+
+  // Pick the correct card image by score range
+  const cardSrc =
+    (s <= 500)  ? 'toddler-card.png' :
+    (s <= 2000) ? 'ninja-card.png'   :
+    (s <= 4000) ? 'samurai-card.png' :
+    (s <= 6000) ? 'spartan-card.png' :
+    (s <= 8000) ? 'messiah-card.png' :
+                  'god-card.png';
+
   const handleRaw = (handleInput.value || '').trim();
   const handle = handleRaw ? (handleRaw.startsWith('@') ? handleRaw : '@' + handleRaw) : '@anonymous';
-
-  // Map badge -> card image (supports both "messiah" and your earlier "missiah")
-  const CARD_BY_BADGE = {
-    toddler: 'toddler-card.png',
-    ninja: 'ninja-card.png',
-    samurai: 'samurai-card.png',
-    spartan: 'spartan-card.png',
-    messiah: 'messiah-card.png',
-    missiah: 'messiah-card.png',
-    god: 'god-card.png'
-  };
 
   // Helper: fit text inside a rectangle (auto font size down) and draw
   function drawFittedText(g, text, rect, opts = {}){
@@ -691,7 +690,7 @@ function downloadScorecardPng(){
     let fontSize = preferredSize;
     g.textAlign = align;
     g.textBaseline = baseline;
-    g.fillStyle = '#222222'; // keep the same dark text color you used
+    g.fillStyle = '#222222'; // keep the same dark text color
 
     const maxWidth = rect.w - padding*2;
     const maxHeight = rect.h - padding*2;
@@ -717,65 +716,61 @@ function downloadScorecardPng(){
     g.fillText(text, x, y);
   }
 
-  // If we have a matching card image for this badge, use it.
-  const cardSrc = CARD_BY_BADGE[badge.name];
-  if (cardSrc){
-    const base = new Image();
-    base.onload = () => {
-      const w = base.naturalWidth;
-      const h = base.naturalHeight;
+  const base = new Image();
+  base.onload = () => {
+    const w = base.naturalWidth;
+    const h = base.naturalHeight;
 
-      const c = document.createElement('canvas');
-      c.width = w; c.height = h;
-      const g = c.getContext('2d');
+    const c = document.createElement('canvas');
+    c.width = w; c.height = h;
+    const g = c.getContext('2d');
 
-      // Draw base card
-      g.drawImage(base, 0, 0, w, h);
+    // Draw base card
+    g.drawImage(base, 0, 0, w, h);
 
-      // EXACT AREAS (unchanged)
-      const HS_BOX     = { x: 1176, y: 70,  w: 378,  h: 212 };  // High Score area
-      const HANDLE_BOX = { x:  644, y: 461, w: 1000, h: 121 };  // X handle area
+    // --- EXACT AREAS (unchanged) ---
+    const HS_BOX     = { x: 1176, y: 70,  w: 378,  h: 212 };  // High Score area
+    const HANDLE_BOX = { x:  644, y: 461, w: 1000, h: 121 };  // X handle area
 
-      // "High Score" label (top/center in HS_BOX)
-      drawFittedText(g, 'High Score', HS_BOX, {
-        weight: '700',
-        preferredSize: 40,
-        minSize: 20,
-        align: 'center',
-        vAlign: 'top',
-        padding: 22
-      });
+    // "High Score" label (top/center in HS_BOX)
+    drawFittedText(g, 'High Score', HS_BOX, {
+      weight: '700',
+      preferredSize: 40,
+      minSize: 20,
+      align: 'center',
+      vAlign: 'top',
+      padding: 22
+    });
 
-      // Numeric high score (centered below label in HS_BOX)
-      const SCORE_SUB = { x: HS_BOX.x, y: HS_BOX.y + 78, w: HS_BOX.w, h: HS_BOX.h - 78 };
-      drawFittedText(g, String(highestScore), SCORE_SUB, {
-        weight: '900',
-        preferredSize: 112,
-        minSize: 28,
-        align: 'center',
-        vAlign: 'middle',
-        padding: 20
-      });
+    // Numeric high score (centered below label in HS_BOX)
+    const SCORE_SUB = { x: HS_BOX.x, y: HS_BOX.y + 78, w: HS_BOX.w, h: HS_BOX.h - 78 };
+    drawFittedText(g, String(highestScore), SCORE_SUB, {
+      weight: '900',
+      preferredSize: 112,
+      minSize: 28,
+      align: 'center',
+      vAlign: 'middle',
+      padding: 20
+    });
 
-      // X handle (must start from LEFT in HANDLE_BOX)
-      drawFittedText(g, handle, HANDLE_BOX, {
-        weight: '700',
-        preferredSize: 54,
-        minSize: 22,
-        align: 'left',
-        vAlign: 'middle',
-        padding: 28
-      });
+    // X handle (start from LEFT in HANDLE_BOX)
+    drawFittedText(g, handle, HANDLE_BOX, {
+      weight: '700',
+      preferredSize: 54,
+      minSize: 22,
+      align: 'left',
+      vAlign: 'middle',
+      padding: 28
+    });
 
-      // Download
-      const a = document.createElement('a');
-      a.download = 'scorecard.png';
-      a.href = c.toDataURL('image/png');
-      a.click();
-    };
-    base.src = cardSrc; // e.g., 'ninja-card.png'
-    return;
-  }
+    // Download
+    const a = document.createElement('a');
+    a.download = 'scorecard.png';
+    a.href = c.toDataURL('image/png');
+    a.click();
+  };
+  base.src = cardSrc;
+}
 
   // Fallback (no matching card): simple generator
   const w = 900, h = 500;
@@ -1043,6 +1038,7 @@ function downloadScorecardPng(){
   </script>
 </body>
 </html>
+
 
 
 
