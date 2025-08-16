@@ -42,12 +42,38 @@
 
     /* Mobile controls */
     .controls{position:fixed;inset:0;pointer-events:none}
-    .pad{position:absolute;bottom:18px;display:flex;gap:10px;pointer-events:auto}
-    .pad.left{left:18px}
-    .pad.right{right:18px}
-    .btn{width:64px;height:64px;border-radius:20px;display:grid;place-items:center;font-weight:800;font-size:14px;text-transform:uppercase;color:var(--ui);background:rgba(255,255,255,.08);backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,.2);box-shadow:0 12px 30px -12px var(--shadow);user-select:none;-webkit-user-select:none;touch-action:manipulation}
+    .pad{position:absolute;bottom:22px;display:flex;gap:14px;pointer-events:auto}
+    .pad.left{left:22px}
+    .pad.right{right:22px}
+
+    /* Bigger & wider buttons */
+    .btn{
+      width:140px;              /* wider so "Shoot Web" fits */
+      height:90px;
+      border-radius:22px;
+      display:flex;             /* flex ensures text centers */
+      align-items:center;
+      justify-content:center;
+      font-weight:800;
+      font-size:20px;
+      text-transform:uppercase;
+      color:var(--ui);
+      background:rgba(255,255,255,.08);
+      backdrop-filter:blur(6px);
+      border:1px solid rgba(255,255,255,.2);
+      box-shadow:0 12px 30px -12px var(--shadow);
+      user-select:none;
+      -webkit-user-select:none;
+      touch-action:manipulation;
+      text-align:center;        /* extra safety */
+      white-space:nowrap;       /* force one line */
+    }
     .btn:active{transform:translateY(1px)}
-    .btn.accent{background:radial-gradient(circle at 30% 30%, rgba(255,45,85,.35), rgba(255,45,85,.15));border-color:rgba(255,45,85,.5)}
+    .btn.accent{
+      background:radial-gradient(circle at 30% 30%, rgba(255,45,85,.35), rgba(255,45,85,.15));
+      border-color:rgba(255,45,85,.5);
+    }
+
 
     /* Simple cloud parallax visuals */
     .clouds{position:fixed;inset:0;overflow:hidden;pointer-events:none}
@@ -180,10 +206,10 @@
       <div class="btn" data-hold="right" aria-label="Move Right">▶︎</div>
     </div>
     <div class="pad right">
-      <div class="btn accent" data-hold="swing" aria-label="Attach/Release Web">Web</div>
-      <div class="btn" data-hold="drop" aria-label="Drop">Drop</div>
+      <div class="btn accent" data-hold="swing" aria-label="Shoot Web">Shoot Web</div>
     </div>
   </div>
+
 
   <script>
     // --- Utilities ---
