@@ -680,7 +680,7 @@ function downloadScorecardPng(){
     let fontSize = preferredSize;
     g.textAlign = align;
     g.textBaseline = baseline;
-    g.fillStyle = '#000000';
+    g.fillStyle = '#222222';
 
     // Try to fit by width, then clamp by height
     const maxWidth = rect.w - padding*2;
@@ -774,7 +774,7 @@ if (badge.name === 'toddler') {
     a.href = c.toDataURL('image/png');
     a.click();
   };
-  base.src = 'card.png';
+  base.src = 'toddler-card.png';
   return;
 }
 
@@ -1053,6 +1053,7 @@ if (badge.name === 'toddler') {
   </script>
 </body>
 </html>
+
 
 
 
