@@ -6,13 +6,13 @@
   <title>Spider Swinger</title>
   <style>
     :root{
-      --sky1:#0b1f3a; /* deep night */
+      --sky1:#0b1f3a;
       --sky2:#0e355f;
       --sky3:#155a9c;
       --ground:#0b0f1a;
       --building:#101826;
       --building2:#0e1a2b;
-      --accent:#ff2d55; /* spidey */
+      --accent:#ff2d55;
       --ui:#ffffff;
       --shadow:rgba(0,0,0,.3);
     }
@@ -32,7 +32,7 @@
     .row{display:flex;gap:16px;flex-wrap:wrap}
     .col{flex:1 1 280px}
     .controls-bar{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
-    .btn-ui{pointer-events:auto;padding:10px 14px;border-radius:12px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.08);color:var(--ui);font-weight:700;cursor:pointer;display: flex;align-items: center;justify-content: center}
+    .btn-ui{pointer-events:auto;padding:10px 14px;border-radius:12px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.08);color:var(--ui);font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center}
     .btn-ui:active{transform:translateY(1px)}
     .input{width:100%;padding:10px 12px;border-radius:10px;border:1px solid rgba(255,255,255,.25);background:rgba(0,0,0,.2);color:var(--ui)}
     .label{font-size:13px;opacity:.85;margin-bottom:6px;display:block}
@@ -60,256 +60,50 @@
     @media (min-width: 900px){
       .hint{font-size:13px}
     }
+
     /* Square start menu layout */
-#startMenu .panel.start-square{
-  width: min(92vw, 300px);
-  height: min(92vw, 300px); /* square */
-  display: grid;
-  grid-template-rows: auto 1fr auto; /* title, scores, buttons */
-  gap: 16px;
-  padding: 24px;
-}
+    #startMenu .panel.start-square{
+      width:min(92vw,300px);
+      height:min(92vw,300px);
+      display:grid;
+      grid-template-rows:auto 1fr auto;
+      gap:16px;
+      padding:24px;
+    }
+    #startMenu .panel.start-square .title{margin:0;text-align:center;font-size:26px;font-weight:800}
+    #startMenu .panel.start-square .score-cards{
+      display:grid;grid-template-columns:1fr 1fr;align-items:center;justify-items:center;gap:10px
+    }
+    #startMenu .panel.start-square .score-card{display:flex;flex-direction:column;align-items:center;gap:8px}
+    #startMenu .panel.start-square .label{font-size:14px;opacity:.9;margin:0}
+    #startMenu .panel.start-square .score-big{font-size:44px;font-weight:900}
+    #startMenu .panel.start-square .controls-square{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+    #startMenu .panel.start-square .btn-ui{min-width:160px;height:44px;padding:0 16px;display:flex;align-items:center;justify-content:center}
 
-/* Title centered */
-#startMenu .panel.start-square .title{
-  margin: 0;
-  text-align: center;
-  font-size: 26px;
-  font-weight: 800;
-}
-
-/* Two big score blocks centered in the square */
-#startMenu .panel.start-square .score-cards{
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  align-items: center;      /* vertical center */
-  justify-items: center;    /* horizontal center in each cell */
-  gap: 10px;
-}
-
-#startMenu .panel.start-square .score-card{
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-}
-
-#startMenu .panel.start-square .label{
-  font-size: 14px;
-  opacity: .9;
-  margin: 0;
-}
-
-#startMenu .panel.start-square .score-big{
-  font-size: 44px;    /* bigger */
-  font-weight: 900;
-}
-
-/* Buttons neatly inside the square */
-#startMenu .panel.start-square .controls-square{
-  display: flex;
-  gap: 12px;
-  justify-content: center;
-  flex-wrap: wrap;
-  }
-
-  /* Make buttons a bit larger and consistent */
-  #startMenu .panel.start-square .btn-ui{
-    min-width: 160px;
-    height: 44px;
-    padding: 0 16px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-/* Square scorecard layout */
-#scorecard .panel.score-square{
-  width: min(92vw, 520px);
-  height: min(92vw, 520px);       /* make it square */
-  display: grid;
-  grid-template-rows: auto 1fr auto auto; /* title, main, message, buttons */
-  gap: 16px;
-  padding: 24px;
-  }
-
-  /* Title centered */
-  #scorecard .panel.score-square .title{
-    margin: 0;
-    text-align: center;
-    font-size: 45px;
-    font-weight: 800;
-  }
-
-  /* Two-column main area (left: badge+input, right: high score) */
-  #scorecard .panel.score-square .score-main{
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    align-items: center;      /* vertical centering in the square */
-    justify-items: center;    /* horizontal centering per cell */
-    gap: 16px;
-  }
-
-  /* Left side: badge + input stacked */
-  #scorecard .panel.score-square .left{
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 5px;
-    width: 100%;
-  }
-
-  #scorecard .panel.score-square .badge-img{
-    width: 150px;
-    height: 150px;
-    object-fit: contain;
-    image-rendering: auto;
-  }
-
-  /* Make input comfortable inside the square */
-  #scorecard .panel.score-square .input{
-    width: min(100%, 260px);
-  }
-
-  /* Right side: big high score number */
-  #scorecard .panel.score-square .right{
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 8px;
-  }
-
-  #scorecard .panel.score-square .score-big{
-    font-size: 48px;  /* bigger, can adjust */
-    font-weight: 900;
-  }
-
-  /* Badge message centered under main grid */
-  #scorecard .panel.score-square .badge-msg{
-    text-align: center;
-    opacity: .9;
-    min-height: 28px; /* reserve space so layout doesn't jump */
-  }
-
-  /* Bottom buttons inside the square */
-  #scorecard .panel.score-square .controls-square{
-    display: flex;
-    gap: 12px;
-    justify-content: center;
-    flex-wrap: wrap;
-  }
-
-  #scorecard .panel.score-square .btn-ui{
-    min-width: 160px;
-    height: 44px;
-    padding: 0 16px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  /* Square scorecard layout */
-  #scorecard .panel.score-square{
-    width: min(92vw, 400px);
-    height: min(92vw, 400px);
-    display: grid;
-    grid-template-rows: auto 1fr auto auto; /* title, main, input, buttons */
-    gap: 16px;
-    padding: 24px;
-  }
-
-  /* Title centered */
-  #scorecard .panel.score-square .title{
-    margin: 0;
-    text-align: center;
-    font-size: 24px;
-    font-weight: 800;
-  }
-
-  /* Two-column main area (left: badge+message, right: high score) */
-  #scorecard .panel.score-square .score-main{
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    align-items: center;
-    justify-items: center;
-    gap: 16px;
-  }
-
-  /* Left side: badge + message stacked */
-  #scorecard .panel.score-square .left{
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-    width: 100%;
-  }
-
-  #scorecard .panel.score-square .badge-img{
-    width: 120px;
-    height: 120px;
-    object-fit: contain;
-    image-rendering: auto;
-  }
-
-  #scorecard .panel.score-square .badge-msg{
-    text-align: center;
-    opacity: .95;
-    min-height: 28px; /* reserve space so layout doesn't jump */
-  }
-
-  /* Right side: big high score number */
-  #scorecard .panel.score-square .right{
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 8px;
-  }
-
-  #scorecard .panel.score-square .score-big{
-    font-size: 48px;
-    font-weight: 900;
-  }
-
-  /* Input row ABOVE buttons */
-  #scorecard .panel.score-square .input-row{
-    display: flex;
-    justify-content: center;
-  }
-
-  #scorecard .panel.score-square .input{
-    width: min(100%, 300px);
-  }
-
-  /* Grey placeholder text for clarity */
-  #scorecard .panel.score-square .input::placeholder{
-    color: rgba(255,255,255,.6);
-  }
-
-  /* Accessibility helper to hide labels visually but keep for screen readers */
-  .visually-hidden{
-    position: absolute !important;
-    height: 1px; width: 1px;
-    overflow: hidden;
-    clip: rect(1px, 1px, 1px, 1px);
-    white-space: nowrap;
-  }
-
-  /* Bottom buttons inside the square */
-  #scorecard .panel.score-square .controls-square{
-    display: flex;
-    gap: 12px;
-    justify-content: center;
-    flex-wrap: wrap;
-  }
-
-  #scorecard .panel.score-square .btn-ui{
-    min-width: 160px;
-    height: 44px;
-    padding: 0 16px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-
+    /* Square scorecard layout (single definition) */
+    #scorecard .panel.score-square{
+      width:min(92vw,400px);
+      height:min(92vw,400px);
+      display:grid;
+      grid-template-rows:auto 1fr auto auto; /* title, main, input, buttons */
+      gap:16px;
+      padding:24px;
+    }
+    #scorecard .panel.score-square .title{margin:0;text-align:center;font-size:24px;font-weight:800}
+    #scorecard .panel.score-square .score-main{
+      display:grid;grid-template-columns:1fr 1fr;align-items:center;justify-items:center;gap:16px
+    }
+    #scorecard .panel.score-square .left{display:flex;flex-direction:column;align-items:center;gap:10px;width:100%}
+    #scorecard .panel.score-square .badge-img{width:120px;height:120px;object-fit:contain;image-rendering:auto}
+    #scorecard .panel.score-square .badge-msg{text-align:center;opacity:.95;min-height:28px}
+    #scorecard .panel.score-square .right{display:flex;flex-direction:column;align-items:center;gap:8px}
+    #scorecard .panel.score-square .score-big{font-size:48px;font-weight:900}
+    #scorecard .panel.score-square .input-row{display:flex;justify-content:center}
+    #scorecard .panel.score-square .input{width:min(100%,300px)}
+    #scorecard .panel.score-square .input::placeholder{color:rgba(255,255,255,.6)}
+    .visually-hidden{position:absolute !important;height:1px;width:1px;overflow:hidden;clip:rect(1px,1px,1px,1px);white-space:nowrap}
+    #scorecard .panel.score-square .controls-square{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+    #scorecard .panel.score-square .btn-ui{min-width:160px;height:44px;padding:0 16px;display:flex;align-items:center;justify-content:center}
   </style>
 </head>
 <body>
@@ -329,7 +123,6 @@
   <div id="startMenu" class="overlay show" role="dialog" aria-modal="true">
     <div class="panel start-square">
       <h2 class="title">Octo Swinger</h2>
-
       <div class="score-cards">
         <div class="score-card">
           <div class="label">Best Score</div>
@@ -340,7 +133,6 @@
           <div id="lastScoreLabel" class="score-big">0</div>
         </div>
       </div>
-
       <div class="controls-bar controls-square">
         <button id="startBtn" class="btn-ui">Start</button>
         <button id="openScorecardBtn" class="btn-ui">Download Score</button>
@@ -352,34 +144,26 @@
   <div id="scorecard" class="overlay" role="dialog" aria-modal="true">
     <div class="panel score-square">
       <h2 class="title">Score Card</h2>
-
-      <!-- Main grid: Left (badge + message), Right (High Score) -->
       <div class="score-main">
         <div class="left">
           <img id="badgePreview" alt="badge" class="badge-img"/>
-          <div id="badgeMessage" class="badge-msg"></div> <!-- message directly under the character -->
+          <div id="badgeMessage" class="badge-msg"></div>
         </div>
-
         <div class="right">
           <div class="label">High Score</div>
           <div id="highScoreValue" class="score-big">0</div>
         </div>
       </div>
-
-      <!-- Input row ABOVE the buttons -->
       <div class="input-row">
         <label class="visually-hidden" for="handleInput">Enter your X handle</label>
         <input id="handleInput" class="input" placeholder="Enter your X handle here!"/>
       </div>
-
-      <!-- Bottom buttons -->
       <div class="controls-bar controls-square">
         <button id="closeScorecardBtn" class="btn-ui">Close</button>
         <button id="downloadPngBtn" class="btn-ui">Download PNG</button>
       </div>
     </div>
   </div>
-
 
   <!-- Parallax clouds purely cosmetic -->
   <div class="clouds" aria-hidden="true">
@@ -427,7 +211,6 @@
 
     let W=canvas.width, H=canvas.height;
     function resize(){
-      // Maintain 16:9 internal res but scale canvas for crispness
       const dpr=window.devicePixelRatio||1;
       canvas.width = Math.floor(window.innerWidth*dpr);
       canvas.height = Math.floor(window.innerHeight*dpr);
@@ -438,20 +221,23 @@
     resize();
 
     // --- World state ---
-    const gravity=0.9; // px/frame^2 after DPR transform
+    const gravity=0.9;
     const moveAccel=0.6;
     const maxRunSpeed=8;
 
     const player={x:120,y:300,vx:0,vy:0,r:12,onGround:false,rope:null,ropeLen:0,dead:false};
 
-    // Lava layer (hazard) just above the bottom of the screen
-    const lavaHeight=120; // height of lava from bottom
-    const getLavaY = () => window.innerHeight - lavaHeight; // top edge of lava in screen coords
+    // Preload player sprite once (smoother)
+    const spideyImg = new Image();
+    spideyImg.src = 'player.png';
+    let spideyReady=false;
+    spideyImg.onload=()=>{ spideyReady=true; };
 
-    // Camera follows player on x
+    const lavaHeight=120;
+    const getLavaY = () => window.innerHeight - lavaHeight;
+
     let camX=0;
 
-    // Buildings and anchor points
     const buildings=[]; // {x,w,h,top}
     const anchors=[];   // {x,y}
 
@@ -459,13 +245,12 @@
       buildings.length=0; anchors.length=0;
       let x=0;
       for(let i=0;i<40;i++){
-        const gap = (i===0)?0:Math.random()*90+60; // space between buildings
+        const gap = (i===0)?0:Math.random()*90+60;
         x += gap + (i===0?0:buildings[i-1]?.w||0);
         const w=Math.random()*120+100;
         const h= lerp(window.innerHeight*0.25, window.innerHeight*0.6, Math.random());
-        const top=getLavaY()-h; // ensure buildings end at lava top
+        const top=getLavaY()-h;
         buildings.push({x,w,h,top});
-        // Add 1-2 anchors per building near the roofline
         const aCount = Math.random()<0.5?1:2;
         for(let k=0;k<aCount;k++){
           const ax = x + lerp(10,w-10, k/(aCount-1||1));
@@ -476,7 +261,6 @@
     }
 
     function extendCityIfNeeded(){
-      // If we are within 3000px from the last building, add more
       const last=buildings[buildings.length-1];
       if(!last || player.x + 3000 > last.x + last.w){
         let x = last ? last.x + last.w : 0;
@@ -485,7 +269,7 @@
           x += gap;
           const w=Math.random()*140+110;
           const h= lerp(window.innerHeight*0.25, window.innerHeight*0.65, Math.random());
-          const top=getLavaY()-h; // end at lava
+          const top=getLavaY()-h;
           buildings.push({x,w,h,top});
           const aCount = Math.random()<0.45?1:2;
           for(let k=0;k<aCount;k++){
@@ -537,8 +321,7 @@
 
     // --- Web attach/detach ---
     function tryAttachWeb(){
-      // Find nearest anchor in front within range
-      const range=420; // px
+      const range=420;
       let best=null, bestD=1e9;
       const facing = keys.a? -1 : (keys.d? 1 : 1);
       const px=player.x, py=player.y;
@@ -554,14 +337,12 @@
         player.ropeLen=bestD;
       }
     }
-
     function detachWeb(){ player.rope=null; }
 
     // --- Collision helpers ---
     function groundCollision(){
       player.onGround=false;
       for(const b of buildings){
-        // if over building
         if(player.x> b.x && player.x < b.x+b.w){
           if(player.vy>=0 && player.y + player.r > b.top && player.y + player.r < b.top + 40){
             player.y=b.top - player.r; player.vy=0; player.onGround=true; return;
@@ -574,18 +355,17 @@
     let score=0; let bestX=0; let passed=0;
     let highestScore= Number(localStorage.getItem('spider_high_score')||0);
     let lastScore=0;
-    let gameActive=false; // running and scoring when true
-    let inMenu=true; // true when start menu or overlays should pause gameplay
+    let gameActive=false;
+    let inMenu=true;
     let respawnTimer=0;
 
     function updateScore(){
-      if(!gameActive) return; // Don't update score when game is over
+      if(!gameActive) return;
       bestX=Math.max(bestX, player.x);
       score = Math.floor(bestX*0.1 + passed*25);
       scoreEl.textContent = `Score: ${score}`;
     }
 
-    // Helper to place player on the first building rooftop
     function placePlayerOnFirstBuilding(){
       const first = buildings[0];
       if(first){
@@ -598,7 +378,6 @@
       }
     }
 
-    // --- Restart ---
     function restart(){
       player.vx=2; player.vy=0; player.rope=null; player.onGround=false; player.dead=false; 
       bestX=0; score=0; passed=0; camX=0; gameActive=true; respawnTimer=0;
@@ -607,7 +386,6 @@
       updateScoreDisplay();
     }
 
-    // --- Respawn ---
     function respawn(){
       player.vx=2; player.vy=0; player.rope=null; player.onGround=false; player.dead=false;
       bestX=0; score=0; passed=0; camX=0; gameActive=true; respawnTimer=0;
@@ -640,13 +418,12 @@
 
     function computeBadgeForScore(s){
       if(s<=500)   return {name:'toddler', path:'action-icons/toddler.png', msg:'You are a Toddler'};
-      if(s<=2000)   return {name:'ninja',   path:'action-icons/ninja.png',   msg:'You have good ninja stealth.'};
-      if(s<=4000)   return {name:'samurai', path:'action-icons/samurai.png', msg:'You are a Samurai.'};
+      if(s<=2000)  return {name:'ninja',   path:'action-icons/ninja.png',   msg:'You have good ninja stealth.'};
+      if(s<=4000)  return {name:'samurai', path:'action-icons/samurai.png', msg:'You are a Samurai.'};
       if(s<=6000)  return {name:'spartan', path:'action-icons/spartan.png', msg:'You are a Spartan.'};
-      if(s<=8000) return {name:'messiah', path:'action-icons/missiah.png', msg:'You are Messiah'};
+      if(s<=8000)  return {name:'messiah', path:'action-icons/messiah.png', msg:'You are Messiah'};
       return {name:'god', path:'action-icons/god.png', msg:'Congratulations, you are a God.'};
     }
-
 
     function openScorecard(){
       const badge=computeBadgeForScore(highestScore);
@@ -658,159 +435,88 @@
     }
 
     function closeScorecard(){ scorecard.classList.remove('show'); }
-function downloadScorecardPng(){
-  const s = highestScore;
 
-  // Pick the correct card image by score range
-  const cardSrc =
-    (s <= 500)  ? 'toddler-card.png' :
-    (s <= 2000) ? 'ninja-card.png'   :
-    (s <= 4000) ? 'samurai-card.png' :
-    (s <= 6000) ? 'spartan-card.png' :
-    (s <= 8000) ? 'messiah-card.png' :
-                  'god-card.png';
+    // --- Download card PNG with exact boxes ---
+    function downloadScorecardPng(){
+      const s = highestScore;
 
-  const handleRaw = (handleInput.value || '').trim();
-  const handle = handleRaw ? (handleRaw.startsWith('@') ? handleRaw : '@' + handleRaw) : '@anonymous';
+      // Choose card image by score range
+      const cardSrc =
+        (s <= 500)  ? 'toddler-card.png' :
+        (s <= 2000) ? 'ninja-card.png'   :
+        (s <= 4000) ? 'samurai-card.png' :
+        (s <= 6000) ? 'spartan-card.png' :
+        (s <= 8000) ? 'messiah-card.png' :
+                      'god-card.png';
 
-  // Helper: fit text inside a rectangle (auto font size down) and draw
-  function drawFittedText(g, text, rect, opts = {}){
-    const {
-      weight = '900',
-      preferredSize = 64,
-      minSize = 18,
-      family = 'Inter, Arial, sans-serif',
-      align = 'center',    // 'left' | 'center' | 'right'
-      vAlign = 'middle',   // 'top' | 'middle' | 'bottom'
-      padding = 12,
-      baseline = 'alphabetic',
-      lineHeight = 1.0
-    } = opts;
+      const handleRaw = (handleInput.value || '').trim();
+      const handle = handleRaw ? (handleRaw.startsWith('@') ? handleRaw : '@' + handleRaw) : '@anonymous';
 
-    let fontSize = preferredSize;
-    g.textAlign = align;
-    g.textBaseline = baseline;
-    g.fillStyle = '#222222'; // keep the same dark text color
+      // Helper: fit text into rect
+      function drawFittedText(g, text, rect, opts = {}){
+        const {
+          weight='900', preferredSize=64, minSize=18,
+          family='Inter, Arial, sans-serif',
+          align='center', vAlign='middle',
+          padding=12, baseline='alphabetic', lineHeight=1.0
+        } = opts;
+        let fontSize = preferredSize;
+        g.textAlign = align;
+        g.textBaseline = baseline;
+        g.fillStyle = '#222222';
+        const maxWidth = rect.w - padding*2;
+        const maxHeight = rect.h - padding*2;
+        while (fontSize >= minSize){
+          g.font = `${weight} ${fontSize}px ${family}`;
+          const width = g.measureText(text).width;
+          const height = fontSize * lineHeight;
+          if (width <= maxWidth && height <= maxHeight) break;
+          fontSize -= 1;
+        }
+        let x;
+        if (align==='left') x = rect.x + padding;
+        else if (align==='center') x = rect.x + rect.w/2;
+        else x = rect.x + rect.w - padding;
+        let y;
+        if (vAlign==='top'){ g.textBaseline='top'; y = rect.y + padding; }
+        else if (vAlign==='middle'){ g.textBaseline='middle'; y = rect.y + rect.h/2; }
+        else { g.textBaseline='bottom'; y = rect.y + rect.h - padding; }
+        g.fillText(text, x, y);
+      }
 
-    const maxWidth = rect.w - padding*2;
-    const maxHeight = rect.h - padding*2;
+      const base = new Image();
+      base.onload = () => {
+        const w = base.naturalWidth, h = base.naturalHeight;
+        const c = document.createElement('canvas'); c.width=w; c.height=h;
+        const g = c.getContext('2d');
 
-    while (fontSize >= minSize){
-      g.font = `${weight} ${fontSize}px ${family}`;
-      const width = g.measureText(text).width;
-      const height = fontSize * lineHeight;
-      if (width <= maxWidth && height <= maxHeight) break;
-      fontSize -= 1;
+        g.drawImage(base, 0, 0, w, h);
+
+        // Exact areas
+        const HS_BOX     = { x:1176, y:70,  w:378,  h:212 };
+        const HANDLE_BOX = { x: 644, y:461, w:1000, h:121 };
+
+        // Label
+        drawFittedText(g, 'High Score', HS_BOX, {
+          weight:'700', preferredSize:40, minSize:20, align:'center', vAlign:'top', padding:22
+        });
+        // Number
+        const SCORE_SUB = { x:HS_BOX.x, y:HS_BOX.y+78, w:HS_BOX.w, h:HS_BOX.h-78 };
+        drawFittedText(g, String(highestScore), SCORE_SUB, {
+          weight:'900', preferredSize:112, minSize:28, align:'center', vAlign:'middle', padding:20
+        });
+        // Handle (left aligned)
+        drawFittedText(g, handle, HANDLE_BOX, {
+          weight:'700', preferredSize:54, minSize:22, align:'left', vAlign:'middle', padding:28
+        });
+
+        const a=document.createElement('a');
+        a.download='scorecard.png';
+        a.href=c.toDataURL('image/png');
+        a.click();
+      };
+      base.src = cardSrc;
     }
-
-    let x;
-    if (align === 'left') x = rect.x + padding;
-    else if (align === 'center') x = rect.x + rect.w/2;
-    else x = rect.x + rect.w - padding;
-
-    let y;
-    if (vAlign === 'top'){ g.textBaseline = 'top'; y = rect.y + padding; }
-    else if (vAlign === 'middle'){ g.textBaseline = 'middle'; y = rect.y + rect.h/2; }
-    else { g.textBaseline = 'bottom'; y = rect.y + rect.h - padding; }
-
-    g.fillText(text, x, y);
-  }
-
-  const base = new Image();
-  base.onload = () => {
-    const w = base.naturalWidth;
-    const h = base.naturalHeight;
-
-    const c = document.createElement('canvas');
-    c.width = w; c.height = h;
-    const g = c.getContext('2d');
-
-    // Draw base card
-    g.drawImage(base, 0, 0, w, h);
-
-    // --- EXACT AREAS (unchanged) ---
-    const HS_BOX     = { x: 1176, y: 70,  w: 378,  h: 212 };  // High Score area
-    const HANDLE_BOX = { x:  644, y: 461, w: 1000, h: 121 };  // X handle area
-
-    // "High Score" label (top/center in HS_BOX)
-    drawFittedText(g, 'High Score', HS_BOX, {
-      weight: '700',
-      preferredSize: 40,
-      minSize: 20,
-      align: 'center',
-      vAlign: 'top',
-      padding: 22
-    });
-
-    // Numeric high score (centered below label in HS_BOX)
-    const SCORE_SUB = { x: HS_BOX.x, y: HS_BOX.y + 78, w: HS_BOX.w, h: HS_BOX.h - 78 };
-    drawFittedText(g, String(highestScore), SCORE_SUB, {
-      weight: '900',
-      preferredSize: 112,
-      minSize: 28,
-      align: 'center',
-      vAlign: 'middle',
-      padding: 20
-    });
-
-    // X handle (start from LEFT in HANDLE_BOX)
-    drawFittedText(g, handle, HANDLE_BOX, {
-      weight: '700',
-      preferredSize: 54,
-      minSize: 22,
-      align: 'left',
-      vAlign: 'middle',
-      padding: 28
-    });
-
-    // Download
-    const a = document.createElement('a');
-    a.download = 'scorecard.png';
-    a.href = c.toDataURL('image/png');
-    a.click();
-  };
-  base.src = cardSrc;
-}
-
-  // Fallback (no matching card): simple generator
-  const w = 900, h = 500;
-  const c = document.createElement('canvas');
-  c.width = w; c.height = h;
-  const g = c.getContext('2d');
-
-  g.fillStyle = '#0e1a2b'; g.fillRect(0,0,w,h);
-  g.fillStyle = 'white';
-  g.font = 'bold 28px Inter, Arial, sans-serif';
-  g.fillText('Octo Swinger — Score Card', 24, 28);
-
-  g.textAlign = 'right';
-  g.textBaseline = 'top';
-  g.font = '600 16px Inter, Arial, sans-serif';
-  g.fillText('High Score', w - 24, 28);
-  g.font = '900 56px Inter, Arial, sans-serif';
-  g.fillText(String(highestScore), w - 24, 50);
-
-  g.textAlign = 'right';
-  g.textBaseline = 'alphabetic';
-  g.font = '600 18px Inter, Arial, sans-serif';
-  g.fillText(handle, w - 24, h - 24);
-
-  const img = new Image();
-  img.onload = () => {
-    const size = 160; 
-    g.drawImage(img, 24, 120, size, size);
-    g.textAlign = 'center';
-    g.font = '500 20px Inter, Arial, sans-serif';
-    g.fillText(computeBadgeForScore(highestScore).msg, w/2, h - 40);
-
-    const a = document.createElement('a');
-    a.download = 'scorecard.png';
-    a.href = c.toDataURL('image/png');
-    a.click();
-  };
-  img.src = computeBadgeForScore(highestScore).path;
-}
-
 
     // Buttons
     startBtn.addEventListener('click',()=>{ hideMenu(); restart(); gameActive=true; });
@@ -831,9 +537,9 @@ function downloadScorecardPng(){
     // --- Main loop ---
     let lastTs=0;
     function step(ts){
-      const dt = Math.min(33, ts-lastTs || 16); // simple frame clamp
+      const dt = Math.min(33, ts-lastTs || 16);
       lastTs=ts;
-      // Pause simulation when in menu. Still render background.
+
       if(inMenu){
         render();
         requestAnimationFrame(step);
@@ -842,14 +548,14 @@ function downloadScorecardPng(){
 
       extendCityIfNeeded();
 
-      // Input movement
+      // Movement
       if(player.onGround){
         if(keys.a) player.vx = clamp(player.vx - moveAccel, -maxRunSpeed, maxRunSpeed);
         if(keys.d) player.vx = clamp(player.vx + moveAccel, -maxRunSpeed, maxRunSpeed);
         if(!keys.a && !keys.d) player.vx *= 0.86;
       }
 
-      // Attach/Detach logic via W hold
+      // Attach/Detach
       if(keys.w && !player.rope) tryAttachWeb();
       if(!keys.w && player.rope) detachWeb();
       if(keys.s) detachWeb();
@@ -859,39 +565,34 @@ function downloadScorecardPng(){
       player.x += player.vx; 
       player.y += player.vy;
 
-      // Rope constraint (swing)
+      // Rope constraint
       if(player.rope){
         const rx = player.rope.x - player.x;
         const ry = player.rope.y - player.y;
         const dist = Math.hypot(rx,ry) || 1;
         if(dist>player.ropeLen){
-          // Project position onto circle of rope length
-          const nx = rx/dist, ny = ry/dist; // direction from player to anchor
+          const nx = rx/dist, ny = ry/dist;
           const px = player.rope.x - nx*player.ropeLen;
           const py = player.rope.y - ny*player.ropeLen;
-          // Correct position
           const dx = px - player.x, dy = py - player.y;
           player.x = px; player.y = py;
-          // Remove radial velocity (keep tangential)
           const vDot = player.vx*nx + player.vy*ny;
           player.vx -= vDot*nx;
           player.vy -= vDot*ny;
-          // Add a tiny tangential boost for feel when holding D/A
           const tangentX = -ny, tangentY = nx;
           if(keys.d) { player.vx += tangentX*0.25; player.vy += tangentY*0.25; }
           if(keys.a) { player.vx -= tangentX*0.25; player.vy -= tangentY*0.25; }
         }
       }
 
-      // Collisions with rooftops (landing)
+      // Collisions with rooftops
       groundCollision();
 
-      // Lava hazard: touching lava kills
+      // Lava hazard
       const lavaY = getLavaY();
       if(player.y + player.r >= lavaY){
         if(gameActive){
-          player.dead=true;
-          gameActive=false;
+          player.dead=true; gameActive=false;
           highestScore = Math.max(highestScore, score);
           updateScoreDisplay();
           respawnTimer = 120;
@@ -899,14 +600,13 @@ function downloadScorecardPng(){
         }
       }
 
-      // Fallback fail state: far below screen
+      // Fallback fail below screen
       if(player.y - player.r > H + 300){ 
         if(gameActive) {
-          player.dead=true; 
-          gameActive=false;
+          player.dead=true; gameActive=false;
           highestScore = Math.max(highestScore, score);
           updateScoreDisplay();
-          respawnTimer = 120; // 2 seconds at 60fps
+          respawnTimer = 120;
           endRun();
         }
       }
@@ -914,21 +614,15 @@ function downloadScorecardPng(){
       // Respawn timer
       if(respawnTimer > 0) {
         respawnTimer--;
-        if(respawnTimer === 0) {
-          respawn();
-        }
+        if(respawnTimer === 0) respawn();
       }
       
-      if(player.dead){
-        statusEl.textContent='Game Over — respawning in 2s...';
-      } else {
-        statusEl.textContent = player.rope ? `Swing: attached` : `Swing: free`;
-      }
+      statusEl.textContent = player.dead ? 'Game Over — respawning in 2s...' : (player.rope ? 'Swing: attached' : 'Swing: free');
 
-      // Camera follows with smoothing
+      // Camera follow
       camX = lerp(camX, player.x - window.innerWidth*0.35, 0.08);
 
-      // Count passed buildings for score
+      // Count passed buildings
       for(let i=passed;i<buildings.length;i++){
         if(buildings[i].x + buildings[i].w < player.x){ passed=i; }
         else break;
@@ -942,7 +636,6 @@ function downloadScorecardPng(){
     // --- Render ---
     function render(){
       const vw = window.innerWidth; const vh = window.innerHeight;
-      // Clear sky (already gradient background via CSS). We draw parallax stars and skyline silhouettes.
       ctx.clearRect(0,0,vw,vh);
 
       // Parallax distant skyline
@@ -966,24 +659,22 @@ function downloadScorecardPng(){
         const x = Math.floor(b.x - camX);
         const y = b.top;
         if(x+b.w < -200 || x > window.innerWidth+200) continue;
-        // body
         const g=ctx.createLinearGradient(0,y,0,vh);
         g.addColorStop(0, getComputedStyle(document.documentElement).getPropertyValue('--building'));
         g.addColorStop(1, getComputedStyle(document.documentElement).getPropertyValue('--building2'));
         ctx.fillStyle=g;
         ctx.fillRect(x, y, b.w, b.h);
-        // windows
         ctx.fillStyle='rgba(255,255,255,0.06)';
         const cw=12,ch=18, gap=10;
         for(let cx=x+14; cx<x+b.w-10; cx+=cw+gap){
           for(let cy=y+14; cy<y+b.h-20; cy+=ch+gap){
-            if(Math.random()>0.9) continue; // sparse
+            if(Math.random()>0.9) continue;
             ctx.fillRect(cx, cy, cw, ch);
           }
         }
       }
 
-      // Anchors (small dots)
+      // Anchors
       ctx.fillStyle='rgba(255,255,255,0.6)';
       for(const a of anchors){
         const x = Math.floor(a.x - camX), y=a.y;
@@ -1001,7 +692,7 @@ function downloadScorecardPng(){
         ctx.stroke();
       }
 
-      // Lava layer
+      // Lava
       const lavaTop = getLavaY();
       const lavaGrad = ctx.createLinearGradient(0, lavaTop, 0, vh);
       lavaGrad.addColorStop(0,'rgba(255,120,40,0.9)');
@@ -1010,42 +701,29 @@ function downloadScorecardPng(){
       ctx.fillStyle = lavaGrad;
       ctx.fillRect(0, lavaTop, vw, vh - lavaTop);
 
-      // Subtle lava glow
       const glow = ctx.createLinearGradient(0, lavaTop-40, 0, lavaTop+10);
       glow.addColorStop(0,'rgba(255,120,40,0)');
       glow.addColorStop(1,'rgba(255,120,40,0.25)');
       ctx.fillStyle=glow; ctx.fillRect(0, lavaTop-40, vw, 50);
 
-      // Player (spidey image) — increased size by 4px
-      const px = player.x - camX, py = player.y;
-      const spideyImg = new Image();
-      spideyImg.src = "player.png";
-      const size = player.r * 3 + 4; // original size + 4px
-      ctx.drawImage(spideyImg, px - size / 2, py - size / 2, size, size);
+      // Player sprite (preloaded)
+      if (spideyReady){
+        const px = player.x - camX, py = player.y;
+        const size = player.r * 3 + 4;
+        ctx.drawImage(spideyImg, px - size/2, py - size/2, size, size);
+      }
 
-      // Ground fade at bottom
+      // Ground fade
       const grd=ctx.createLinearGradient(0, vh-120, 0, vh);
       grd.addColorStop(0,'rgba(0,0,0,0)'); grd.addColorStop(1,'rgba(0,0,0,.3)');
       ctx.fillStyle=grd; ctx.fillRect(0, vh-120, vw, 120);
     }
 
-    // Start in menu; build a scene for background
+    // Boot
     spawnInitialCity();
     placePlayerOnFirstBuilding();
     showMenu();
     requestAnimationFrame(step);
-    
   </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
