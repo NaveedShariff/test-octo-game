@@ -658,12 +658,12 @@
     }
 
     function closeScorecard(){ scorecard.classList.remove('show'); }
-    function downloadScorecardPng(){
+function downloadScorecardPng(){
   const badge = computeBadgeForScore(highestScore);
   const handleRaw = (handleInput.value || '').trim();
   const handle = handleRaw ? (handleRaw.startsWith('@') ? handleRaw : '@' + handleRaw) : '@anonymous';
 
-  // If toddler (0–200), use provided card.png as background
+  // If toddler (0–200), use the provided card.png as base and place text by your coords
   if (badge.name === 'toddler') {
     const base = new Image();
     base.onload = () => {
@@ -674,26 +674,55 @@
       c.width = w; c.height = h;
       const g = c.getContext('2d');
 
-      // Draw the base card
+      // Draw base card
       g.drawImage(base, 0, 0, w, h);
 
-      // Prepare text drawing (right-aligned)
-      const pad = 28;
-      g.fillStyle = '#000000';
-      g.textAlign = 'right';
-      g.textBaseline = 'top';
+      // ----- HIGH SCORE at given point (pct: x=87.2768, y=45.2884) -----
+      const hsPx = (87.2768 / 100) * w;
+      const hsPy = (45.2884 / 100) * h;
 
-      // Top-right: "High Score" label + value
+      // Label slightly above, value centered on the point
+      g.fillStyle = '#ffffff';
+      g.textAlign = 'center';
+      g.textBaseline = 'middle';
+
       g.font = '600 20px Inter, Arial, sans-serif';
-      g.fillText('High Score', w - pad, pad);
+      g.fillText('High Score', hsPx, hsPy - 26);
 
       g.font = '900 56px Inter, Arial, sans-serif';
-      g.fillText(String(highestScore), w - pad, pad + 26); // value just under label
+      g.fillText(String(highestScore), hsPx, hsPy + 10);
 
-      // Bottom-right: X handle
+      // ----- X HANDLE inside the given box (two pct points) -----
+      // p1 (50.372, 75.1825), p2 (85.4911, 87.6164)
+      const x1 = (50.372 / 100) * w;
+      const y1 = (75.1825 / 100) * h;
+      const x2 = (85.4911 / 100) * w;
+      const y2 = (87.6164 / 100) * h;
+
+      const pad = Math.max(8, Math.min(w, h) * 0.015);   // responsive padding
+      const boxW = Math.max(0, x2 - x1 - pad * 2);
+      const boxH = Math.max(0, y2 - y1 - pad * 2);
+
+      // Fit handle text into width (shrink font if needed)
+      let fontSize = Math.floor(Math.min(24, boxH * 0.7));   // start size relative to box height
+      g.textAlign = 'left';
       g.textBaseline = 'alphabetic';
-      g.font = '600 22px Inter, Arial, sans-serif';
-      g.fillText(handle, w - pad, h - pad);
+      g.fillStyle = '#ffffff';
+
+      const fitHandle = (txt) => {
+        while (fontSize > 12) {
+          g.font = `600 ${fontSize}px Inter, Arial, sans-serif`;
+          const tw = g.measureText(txt).width;
+          if (tw <= boxW) break;
+          fontSize -= 1;
+        }
+      };
+      fitHandle(handle);
+
+      // Draw handle at bottom-left inside the box with padding
+      const textX = x1 + pad;
+      const textY = y2 - pad;
+      g.fillText(handle, textX, textY);
 
       // Download
       const a = document.createElement('a');
@@ -701,9 +730,58 @@
       a.href = c.toDataURL('image/png');
       a.click();
     };
-    base.src = 'card.png'; // <-- ensure this file is in the same folder as your HTML
+    base.src = 'card.png';   // ensure card.png is alongside your HTML
     return;
   }
+
+  // --- Non-toddler fallback: your existing simple generator ---
+  const w = 900, h = 500;
+  const c = document.createElement('canvas');
+  c.width = w; c.height = h;
+  const g = c.getContext('2d');
+
+  // background card
+  g.fillStyle = '#0e1a2b'; g.fillRect(0,0,w,h);
+
+  // header
+  g.fillStyle = 'white';
+  g.font = 'bold 28px Inter, Arial, sans-serif';
+  g.fillText('Spider Swinger — Score Card', 24, 28);
+
+  // score (top-right)
+  g.textAlign = 'right';
+  g.textBaseline = 'top';
+  g.font = '600 16px Inter, Arial, sans-serif';
+  g.fillText('High Score', w - 24, 28);
+  g.font = '900 56px Inter, Arial, sans-serif';
+  g.fillText(String(highestScore), w - 24, 50);
+
+  // handle (bottom-right)
+  g.textBaseline = 'alphabetic';
+  g.font = '600 18px Inter, Arial, sans-serif';
+  const handleRaw2 = (handleInput.value || '').trim();
+  const handle2 = handleRaw2 ? (handleRaw2.startsWith('@') ? handleRaw2 : '@' + handleRaw2) : '@anonymous';
+  g.fillText(handle2, w - 24, h - 24);
+
+  // left icon + badge message
+  const img = new Image();
+  img.onload = () => {
+    const size = 160; 
+    g.drawImage(img, 24, 120, size, size);
+
+    // message centered bottom
+    g.textAlign = 'center';
+    g.font = '500 20px Inter, Arial, sans-serif';
+    g.fillText(badge.msg, w/2, h - 40);
+
+    const a = document.createElement('a');
+    a.download = 'scorecard.png';
+    a.href = c.toDataURL('image/png');
+    a.click();
+  };
+  img.src = badge.path;
+}
+
 
   // Fallback for non-toddler badges: keep your previous simple card generator
   const w = 900, h = 500;
@@ -979,4 +1057,5 @@
   </script>
 </body>
 </html>
+
 
