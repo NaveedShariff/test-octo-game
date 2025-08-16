@@ -716,65 +716,68 @@ function downloadScorecardPng(){
     g.fillText(text, x, y);
   }
 
-  // TODDLER: use provided card.png and draw within exact boxes
-  if (badge.name === 'toddler') {
-    const base = new Image();
-    base.onload = () => {
-      const w = base.naturalWidth;
-      const h = base.naturalHeight;
+ // TODDLER: use provided card.png and draw within exact boxes
+if (badge.name === 'toddler') {
+  const base = new Image();
+  base.onload = () => {
+    const w = base.naturalWidth;
+    const h = base.naturalHeight;
 
-      const c = document.createElement('canvas');
-      c.width = w; c.height = h;
-      const g = c.getContext('2d');
+    const c = document.createElement('canvas');
+    c.width = w; c.height = h;
+    const g = c.getContext('2d');
 
-      // Draw base card
-      g.drawImage(base, 0, 0, w, h);
+    // Draw base card
+    g.drawImage(base, 0, 0, w, h);
 
-      // Boxes (exact pixels as requested)
-      const HS_BOX = { x: 1176, y: 70,  w: 378,  h: 272 };   // High Score
-      const HANDLE_BOX = { x: 644, y: 461, w: 1000, h: 121 }; // X handle
+    // --- EXACT AREAS (as per your diagram) ---
+    // High Score bubble
+    const HS_BOX      = { x: 1176, y: 70,  w: 378,  h: 212 };   // center the label+value here
+    // X handle ribbon
+    const HANDLE_BOX  = { x:  644, y: 461, w: 1000, h: 121 };   // start text from the LEFT here
 
-      // Draw "High Score" label (smaller) at top of HS_BOX
-      drawFittedText(g, 'High Score', HS_BOX, {
-        weight: '600',
-        preferredSize: 36,
-        minSize: 18,
-        align: 'right',
-        vAlign: 'top',
-        padding: 16
-      });
+    // Label "High Score" – top/center inside HS_BOX
+    drawFittedText(g, 'High Score', HS_BOX, {
+      weight: '700',
+      preferredSize: 40,
+      minSize: 20,
+      align: 'center',
+      vAlign: 'top',
+      padding: 22
+    });
 
-      // Draw the numeric score (big) in HS_BOX, below the label
-      // Use a sub-rect (same x/w, lower y) so it stacks under the label.
-      const SCORE_SUB = { x: HS_BOX.x, y: HS_BOX.y + 46, w: HS_BOX.w, h: HS_BOX.h - 46 };
-      drawFittedText(g, String(highestScore), SCORE_SUB, {
-        weight: '900',
-        preferredSize: 112,
-        minSize: 28,
-        align: 'right',
-        vAlign: 'top',
-        padding: 16
-      });
+    // Numeric score – centered below the label inside HS_BOX
+    // (Use a sub-rect to place number under the label while staying inside the same bubble)
+    const SCORE_SUB = { x: HS_BOX.x, y: HS_BOX.y + 78, w: HS_BOX.w, h: HS_BOX.h - 78 };
+    drawFittedText(g, String(highestScore), SCORE_SUB, {
+      weight: '900',
+      preferredSize: 112,
+      minSize: 28,
+      align: 'center',
+      vAlign: 'middle',
+      padding: 20
+    });
 
-      // Draw handle in HANDLE_BOX (right/bottom aligned looks clean for bottom-right area)
-      drawFittedText(g, handle, HANDLE_BOX, {
-        weight: '700',
-        preferredSize: 54,
-        minSize: 22,
-        align: 'right',
-        vAlign: 'bottom',
-        padding: 18
-      });
+    // X handle – MUST START FROM THE LEFT inside HANDLE_BOX
+    drawFittedText(g, handle, HANDLE_BOX, {
+      weight: '700',
+      preferredSize: 54,
+      minSize: 22,
+      align: 'left',     // << start at left edge of the box
+      vAlign: 'middle',
+      padding: 28        // inner margin so it sits nicely inside the rounded pill
+    });
 
-      // Download
-      const a = document.createElement('a');
-      a.download = 'scorecard.png';
-      a.href = c.toDataURL('image/png');
-      a.click();
-    };
-    base.src = 'card.png'; // ensure card.png is in the same folder
-    return;
-  }
+    // Download
+    const a = document.createElement('a');
+    a.download = 'scorecard.png';
+    a.href = c.toDataURL('image/png');
+    a.click();
+  };
+  base.src = 'card.png';
+  return;
+}
+
 
   // NON-TODDLER: keep your previous fallback card (simple generator)
   const w = 900, h = 500;
@@ -1050,6 +1053,7 @@ function downloadScorecardPng(){
   </script>
 </body>
 </html>
+
 
 
 
