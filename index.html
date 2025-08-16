@@ -670,8 +670,8 @@ function downloadScorecardPng(){
       preferredSize = 64,
       minSize = 18,
       family = 'Inter, Arial, sans-serif',
-      align = 'right',       // 'left' | 'center' | 'right'
-      vAlign = 'top',        // 'top' | 'middle' | 'bottom'
+      align = 'center',       // 'left' | 'center' | 'right'
+      vAlign = 'middle',        // 'top' | 'middle' | 'bottom'
       padding = 12,
       baseline = 'alphabetic',
       lineHeight = 1.0
@@ -680,7 +680,7 @@ function downloadScorecardPng(){
     let fontSize = preferredSize;
     g.textAlign = align;
     g.textBaseline = baseline;
-    g.fillStyle = '##000000';
+    g.fillStyle = '#000000';
 
     // Try to fit by width, then clamp by height
     const maxWidth = rect.w - padding*2;
@@ -1050,6 +1050,7 @@ function downloadScorecardPng(){
   </script>
 </body>
 </html>
+
 
 
 
