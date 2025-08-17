@@ -43,20 +43,24 @@
     /* Mobile controls */
     .controls{position:fixed;inset:0;pointer-events:none}
     .pad{position:absolute;bottom:22px;display:flex;gap:14px;pointer-events:auto}
-    .pad.left{left:22px}
+    .pad.left{
+      left:22px;
+      flex-direction:column;   /* stack vertically */
+      gap:16px;                /* space between left & right buttons */
+    }
     .pad.right{right:22px}
 
+
     /* Bigger & wider buttons */
- /* Default buttons (Left & Right) */
     .btn{
-      width:90px;
+      width:140px;              /* wider so "Shoot Web" fits */
       height:90px;
       border-radius:22px;
-      display:flex;
+      display:flex;             /* flex ensures text centers */
       align-items:center;
       justify-content:center;
       font-weight:800;
-      font-size:18px;
+      font-size:20px;
       text-transform:uppercase;
       color:var(--ui);
       background:rgba(255,255,255,.08);
@@ -66,18 +70,13 @@
       user-select:none;
       -webkit-user-select:none;
       touch-action:manipulation;
-      text-align:center;
+      text-align:center;        /* extra safety */
+      white-space:nowrap;       /* force one line */
     }
     .btn:active{transform:translateY(1px)}
-    
-    /* Accent "Shoot Web" button — bigger & wider */
     .btn.accent{
-      width:160px;               /* wider just for Shoot Web */
-      height:90px;
-      font-size:20px;
       background:radial-gradient(circle at 30% 30%, rgba(255,45,85,.35), rgba(255,45,85,.15));
       border-color:rgba(255,45,85,.5);
-      white-space:nowrap;        /* force one line */
     }
 
 
@@ -759,4 +758,3 @@
   </script>
 </body>
 </html>
-
