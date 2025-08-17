@@ -51,16 +51,16 @@
     .pad.right{right:22px}
 
 
-    /* Bigger & wider buttons */
+    /* Default buttons (Left & Right) */
     .btn{
-      width:140px;              /* wider so "Shoot Web" fits */
+      width:90px;
       height:90px;
       border-radius:22px;
-      display:flex;             /* flex ensures text centers */
+      display:flex;
       align-items:center;
       justify-content:center;
       font-weight:800;
-      font-size:20px;
+      font-size:18px;
       text-transform:uppercase;
       color:var(--ui);
       background:rgba(255,255,255,.08);
@@ -70,13 +70,38 @@
       user-select:none;
       -webkit-user-select:none;
       touch-action:manipulation;
-      text-align:center;        /* extra safety */
-      white-space:nowrap;       /* force one line */
+      text-align:center;
     }
     .btn:active{transform:translateY(1px)}
+
+    /* Accent "Shoot Web" button — wider + same total height as stacked left/right */
     .btn.accent{
+      width:160px;               /* keep wider */
+      height:196px;              /* match two stacked buttons height + gap */
+      font-size:22px;
+      line-height:1.2;
       background:radial-gradient(circle at 30% 30%, rgba(255,45,85,.35), rgba(255,45,85,.15));
       border-color:rgba(255,45,85,.5);
+      white-space:nowrap;
+    }
+
+    /* Backward (Left) button in blue glass */
+    .btn.left-btn {
+      background:radial-gradient(circle at 30% 30%, rgba(0,122,255,.35), rgba(0,122,255,.15));
+      border-color:rgba(0,122,255,.5);
+    }
+
+    /* Forward (Right) button in green glass */
+    .btn.right-btn {
+      background:radial-gradient(circle at 30% 30%, rgba(52,199,89,.35), rgba(52,199,89,.15));
+      border-color:rgba(52,199,89,.5);
+    }
+
+    /* Shoot Web stays red glass via .accent */
+    /* Ensure icons inside colored glass buttons are white */
+    .btn.left-btn,
+    .btn.right-btn {
+      color:#ffffff;   /* makes ◀︎ and ▶︎ white */
     }
 
 
@@ -207,13 +232,14 @@
   <!-- Mobile controls -->
   <div class="controls" aria-label="Mobile Controls">
     <div class="pad left">
-      <div class="btn" data-hold="left" aria-label="Move Left">◀︎</div>
-      <div class="btn" data-hold="right" aria-label="Move Right">▶︎</div>
+      <div class="btn left-btn" data-hold="left" aria-label="Move Left">◀︎</div>
+      <div class="btn right-btn" data-hold="right" aria-label="Move Right">▶︎</div>
     </div>
     <div class="pad right">
       <div class="btn accent" data-hold="swing" aria-label="Shoot Web">Shoot Web</div>
     </div>
   </div>
+  
 
 
   <script>
