@@ -50,7 +50,6 @@
     }
     .pad.right{right:22px}
 
-
     /* Default buttons (Left & Right) */
     .btn{
       width:90px;
@@ -76,8 +75,8 @@
 
     /* Accent "Shoot Web" button — wider + same total height as stacked left/right */
     .btn.accent{
-      width:160px;               /* keep wider */
-      height:196px;              /* match two stacked buttons height + gap */
+      width:160px;
+      height:196px;
       font-size:22px;
       line-height:1.2;
       background:radial-gradient(circle at 30% 30%, rgba(255,45,85,.35), rgba(255,45,85,.15));
@@ -89,21 +88,15 @@
     .btn.left-btn {
       background:radial-gradient(circle at 30% 30%, rgba(0,122,255,.35), rgba(0,122,255,.15));
       border-color:rgba(0,122,255,.5);
+      color:#fff;
     }
 
     /* Forward (Right) button in green glass */
     .btn.right-btn {
       background:radial-gradient(circle at 30% 30%, rgba(52,199,89,.35), rgba(52,199,89,.15));
       border-color:rgba(52,199,89,.5);
+      color:#fff;
     }
-
-    /* Shoot Web stays red glass via .accent */
-    /* Ensure icons inside colored glass buttons are white */
-    .btn.left-btn,
-    .btn.right-btn {
-      color:#ffffff;   /* makes ◀︎ and ▶︎ white */
-    }
-
 
     /* Simple cloud parallax visuals */
     .clouds{position:fixed;inset:0;overflow:hidden;pointer-events:none}
@@ -136,12 +129,12 @@
     #startMenu .panel.start-square .controls-square{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
     #startMenu .panel.start-square .btn-ui{min-width:160px;height:44px;padding:0 16px;display:flex;align-items:center;justify-content:center}
 
-    /* Square scorecard layout (single definition) */
+    /* Square scorecard layout */
     #scorecard .panel.score-square{
       width:min(92vw,400px);
       height:min(92vw,400px);
       display:grid;
-      grid-template-rows:auto 1fr auto auto; /* title, main, input, buttons */
+      grid-template-rows:auto 1fr auto auto;
       gap:16px;
       padding:24px;
     }
@@ -160,6 +153,33 @@
     .visually-hidden{position:absolute !important;height:1px;width:1px;overflow:hidden;clip:rect(1px,1px,1px,1px);white-space:nowrap}
     #scorecard .panel.score-square .controls-square{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
     #scorecard .panel.score-square .btn-ui{min-width:160px;height:44px;padding:0 16px;display:flex;align-items:center;justify-content:center}
+
+    /* Hide the old top-left hint; keep score visible */
+    .hint{ display:none !important; }
+
+    /* Device picker & tutorial panels */
+    .panel.device-square, .panel.tutorial-square{
+      width: min(92vw, 420px);
+      height: min(92vw, 420px);
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      gap: 16px;
+      padding: 24px;
+      border-radius: 16px;
+    }
+    .panel .title{margin:0;text-align:center;font-size:24px;font-weight:800}
+    .options{display:grid;gap:12px;align-content:center;justify-items:stretch}
+    .btn-choice{
+      padding:12px 16px;border-radius:12px;border:1px solid rgba(255,255,255,.25);
+      background:rgba(255,255,255,.08);color:var(--ui);font-weight:800;cursor:pointer;
+      display:flex;align-items:center;justify-content:center;
+    }
+    .tutorial-body{display:flex;flex-direction:column;gap:10px;font-size:14px;line-height:1.5;opacity:.95}
+    .tutorial-body .kbd{
+      display:inline-block;padding:2px 8px;border-radius:8px;border:1px solid rgba(255,255,255,.25);
+      background:rgba(255,255,255,.08);font-weight:700;
+    }
+    .panel .controls-square{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
   </style>
 </head>
 <body>
@@ -175,8 +195,8 @@
   <!-- Top-right Menu button -->
   <button id="openMenuBtn" class="btn btn-ui">Menu</button>
 
-  <!-- Start Menu Overlay -->
-  <div id="startMenu" class="overlay show" role="dialog" aria-modal="true">
+  <!-- Start Menu Overlay (hidden by default) -->
+  <div id="startMenu" class="overlay" role="dialog" aria-modal="true">
     <div class="panel start-square">
       <h2 class="title">Octo Swinger</h2>
       <div class="score-cards">
@@ -192,6 +212,33 @@
       <div class="controls-bar controls-square">
         <button id="startBtn" class="btn-ui">Start</button>
         <button id="openScorecardBtn" class="btn-ui">Download Score</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Device Picker (one-time) -->
+  <div id="devicePicker" class="overlay" role="dialog" aria-modal="true">
+    <div class="panel device-square">
+      <h2 class="title">Are you playing in what device?</h2>
+      <div class="options">
+        <button id="chooseMobileBtn" class="btn-choice">Mobile / Tablet</button>
+        <button id="chooseDesktopBtn" class="btn-choice">Computer / Laptop</button>
+      </div>
+      <div class="controls-square">
+        <div style="opacity:.7;font-size:12px;text-align:center">
+          We’ll show a quick one-time tutorial for your device.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tutorial (content changes based on choice) -->
+  <div id="tutorial" class="overlay" role="dialog" aria-modal="true">
+    <div class="panel tutorial-square">
+      <h2 id="tutorialTitle" class="title">How to Play</h2>
+      <div id="tutorialContent" class="tutorial-body"></div>
+      <div class="controls-square">
+        <button id="tutorialContinueBtn" class="btn-ui">Got it — Continue</button>
       </div>
     </div>
   </div>
@@ -239,8 +286,6 @@
       <div class="btn accent" data-hold="swing" aria-label="Shoot Web">Shoot Web</div>
     </div>
   </div>
-  
-
 
   <script>
     // --- Utilities ---
@@ -266,6 +311,58 @@
     const badgePreview=document.getElementById('badgePreview');
     const badgeMessage=document.getElementById('badgeMessage');
 
+    // Device picker / tutorial elements (TOP-LEVEL, not inside render)
+    const devicePicker = document.getElementById('devicePicker');
+    const chooseMobileBtn = document.getElementById('chooseMobileBtn');
+    const chooseDesktopBtn = document.getElementById('chooseDesktopBtn');
+    const tutorial = document.getElementById('tutorial');
+    const tutorialTitle = document.getElementById('tutorialTitle');
+    const tutorialContent = document.getElementById('tutorialContent');
+    const tutorialContinueBtn = document.getElementById('tutorialContinueBtn');
+    const TUTORIAL_KEY = 'octo_tutorial_shown';
+
+    function show(el){ el.classList.add('show'); inMenu = true; }
+    function hide(el){ el.classList.remove('show'); }
+
+    function showDevicePicker(){ show(devicePicker); }
+
+    function showTutorial(kind){
+      if(kind === 'mobile'){
+        tutorialTitle.textContent = 'Mobile / Tablet — How to Play';
+        tutorialContent.innerHTML = `
+          <div>Use the on-screen controls:</div>
+          <ul style="margin:0 0 6px 18px; padding:0">
+            <li><span class="kbd">◀︎</span> Left button: move back</li>
+            <li><span class="kbd">▶︎</span> Right button: move forward</li>
+            <li><span class="kbd">Shoot Web</span> button: attach / release your web to swing</li>
+          </ul>
+          <div>Tip: keep swinging and use left/right to build momentum!</div>
+        `;
+      } else {
+        tutorialTitle.textContent = 'Computer / Laptop — How to Play';
+        tutorialContent.innerHTML = `
+          <div>Use your keyboard:</div>
+          <ul style="margin:0 0 6px 18px; padding:0">
+            <li><span class="kbd">A</span> move left</li>
+            <li><span class="kbd">D</span> move right</li>
+            <li><span class="kbd">W</span> (or Space) to shoot web (hold to stay attached)</li>
+          </ul>
+          <div>Tip: release at the right time to gain speed between anchors!</div>
+        `;
+      }
+      hide(devicePicker);
+      show(tutorial);
+    }
+
+    // One-time listeners
+    chooseMobileBtn.addEventListener('click', ()=> showTutorial('mobile'));
+    chooseDesktopBtn.addEventListener('click', ()=> showTutorial('desktop'));
+    tutorialContinueBtn.addEventListener('click', ()=>{
+      localStorage.setItem(TUTORIAL_KEY, 'true');
+      hide(tutorial);
+      showMenu();
+    });
+
     let W=canvas.width, H=canvas.height;
     function resize(){
       const dpr=window.devicePixelRatio||1;
@@ -284,7 +381,7 @@
 
     const player={x:120,y:300,vx:0,vy:0,r:12,onGround:false,rope:null,ropeLen:0,dead:false};
 
-    // Preload player sprite once (smoother)
+    // Preload player sprite once
     const spideyImg = new Image();
     spideyImg.src = 'player.png';
     let spideyReady=false;
@@ -496,8 +593,6 @@
     // --- Download card PNG with exact boxes ---
     function downloadScorecardPng(){
       const s = highestScore;
-
-      // Choose card image by score range
       const cardSrc =
         (s <= 500)  ? 'toddler-card.png' :
         (s <= 2000) ? 'ninja-card.png'   :
@@ -509,14 +604,9 @@
       const handleRaw = (handleInput.value || '').trim();
       const handle = handleRaw ? (handleRaw.startsWith('@') ? handleRaw : '@' + handleRaw) : '@anonymous';
 
-      // Helper: fit text into rect
       function drawFittedText(g, text, rect, opts = {}){
-        const {
-          weight='900', preferredSize=64, minSize=18,
-          family='Inter, Arial, sans-serif',
-          align='center', vAlign='middle',
-          padding=12, baseline='alphabetic', lineHeight=1.0
-        } = opts;
+        const {weight='900', preferredSize=64, minSize=18, family='Inter, Arial, sans-serif',
+               align='center', vAlign='middle', padding=12, baseline='alphabetic', lineHeight=1.0} = opts;
         let fontSize = preferredSize;
         g.textAlign = align;
         g.textBaseline = baseline;
@@ -549,20 +639,16 @@
 
         g.drawImage(base, 0, 0, w, h);
 
-        // Exact areas
         const HS_BOX     = { x:1176, y:70,  w:378,  h:212 };
         const HANDLE_BOX = { x: 644, y:461, w:1000, h:121 };
 
-        // Label
         drawFittedText(g, 'High Score', HS_BOX, {
           weight:'700', preferredSize:40, minSize:20, align:'center', vAlign:'top', padding:22
         });
-        // Number
         const SCORE_SUB = { x:HS_BOX.x, y:HS_BOX.y+78, w:HS_BOX.w, h:HS_BOX.h-78 };
         drawFittedText(g, String(highestScore), SCORE_SUB, {
           weight:'900', preferredSize:112, minSize:28, align:'center', vAlign:'middle', padding:20
         });
-        // Handle (left aligned)
         drawFittedText(g, handle, HANDLE_BOX, {
           weight:'700', preferredSize:54, minSize:22, align:'left', vAlign:'middle', padding:28
         });
@@ -631,7 +717,6 @@
           const nx = rx/dist, ny = ry/dist;
           const px = player.rope.x - nx*player.ropeLen;
           const py = player.rope.y - ny*player.ropeLen;
-          const dx = px - player.x, dy = py - player.y;
           player.x = px; player.y = py;
           const vDot = player.vx*nx + player.vy*ny;
           player.vx -= vDot*nx;
@@ -779,9 +864,14 @@
     // Boot
     spawnInitialCity();
     placePlayerOnFirstBuilding();
-    showMenu();
+
+    if(localStorage.getItem(TUTORIAL_KEY) === 'true'){
+      showMenu();
+    } else {
+      showDevicePicker();
+    }
+
     requestAnimationFrame(step);
   </script>
 </body>
 </html>
-
