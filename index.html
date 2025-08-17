@@ -268,7 +268,7 @@
     </div>
   </div>
 
-  <!-- Parallax clouds purely cosmetic -->
+  <!-- Parallax clouds -->
   <div class="clouds" aria-hidden="true">
     <div class="cloud" style="left:5%; top:12%; width:260px; opacity:.35"></div>
     <div class="cloud" style="left:35%; top:22%; width:220px; opacity:.28"></div>
@@ -311,7 +311,7 @@
     const badgePreview=document.getElementById('badgePreview');
     const badgeMessage=document.getElementById('badgeMessage');
 
-    // Device picker / tutorial elements (TOP-LEVEL, not inside render)
+    // Device picker / tutorial
     const devicePicker = document.getElementById('devicePicker');
     const chooseMobileBtn = document.getElementById('chooseMobileBtn');
     const chooseDesktopBtn = document.getElementById('chooseDesktopBtn');
@@ -323,7 +323,6 @@
 
     function show(el){ el.classList.add('show'); inMenu = true; }
     function hide(el){ el.classList.remove('show'); }
-
     function showDevicePicker(){ show(devicePicker); }
 
     function showTutorial(kind){
@@ -389,6 +388,120 @@
 
     const lavaHeight=120;
     const getLavaY = () => window.innerHeight - lavaHeight;
+
+    /* === Realistic lava state & helpers === */
+    let lavaT = 0;                // time in seconds
+    const bubbles = [];
+    function spawnBubble(xMin, xMax, yTop){
+      bubbles.push({
+        x: xMin + Math.random() * (xMax - xMin),
+        y: yTop + 40 + Math.random() * 120,
+        r: 2 + Math.random() * 5,
+        vx: (Math.random() * 0.4 - 0.2),
+        vy: - (0.4 + Math.random() * 0.8),
+        life: 1.0
+      });
+    }
+    function updateLava(dt, vw){
+      lavaT += dt * 0.001; // ms -> s
+      const rate = Math.max(1, Math.floor(vw / 400));
+      for(let i=0;i<rate;i++){
+        if(Math.random() < 0.4) spawnBubble(0, vw, getLavaY());
+      }
+      for(let i=bubbles.length-1;i>=0;i--){
+        const b = bubbles[i];
+        b.x += b.vx + Math.sin((b.y + lavaT*120) * 0.02) * 0.05;
+        b.y += b.vy;
+        b.r *= 0.999;
+        b.life -= 0.008 + Math.random()*0.006;
+        if(b.y < getLavaY() + 4) b.life -= 0.03;
+        if(b.life <= 0 || b.y < getLavaY() - 2) bubbles.splice(i,1);
+      }
+    }
+    function drawLava(g, vw, vh, t){
+      const top = getLavaY();
+      // 1) Base pool
+      const baseGrad = g.createLinearGradient(0, top, 0, vh);
+      baseGrad.addColorStop(0.00, 'rgba(255,160,40,0.95)');
+      baseGrad.addColorStop(0.25, 'rgba(255,90,20,0.95)');
+      baseGrad.addColorStop(0.55, 'rgba(200,30,20,1.0)');
+      baseGrad.addColorStop(1.00, 'rgba(60,10,10,1.0)');
+      g.fillStyle = baseGrad;
+      g.fillRect(0, top, vw, vh - top);
+
+      // 2) Wavy surface rim
+      const amp = 12 + Math.sin(t*2.1)*4;
+      const freq = 0.012;
+      const speed = 40;
+      const offset = t * speed;
+
+      g.beginPath();
+      g.moveTo(0, top);
+      const step = 18;
+      for(let x=0; x<=vw; x+=step){
+        const y = top + Math.sin((x + offset)*freq) * amp
+                        + Math.sin((x*0.5 + offset*0.7)*freq*0.8) * (amp*0.35);
+        g.lineTo(x, y);
+      }
+      g.lineTo(vw, vh);
+      g.lineTo(0, vh);
+      g.closePath();
+
+      const rimGrad = g.createLinearGradient(0, top-30, 0, top+40);
+      rimGrad.addColorStop(0.0, 'rgba(255,240,160,0.00)');
+      rimGrad.addColorStop(0.4, 'rgba(255,220,120,0.35)');
+      rimGrad.addColorStop(1.0, 'rgba(255,120,40,0.10)');
+      g.fillStyle = rimGrad;
+      g.fill();
+
+      // 3) Hot streaks
+      g.save();
+      g.globalCompositeOperation = 'lighter';
+      for(let i=0;i<4;i++){
+        const y0 = top + 40 + i*30 + Math.sin(t*1.2 + i)*12;
+        const bandGrad = g.createLinearGradient(0, y0-10, 0, y0+10);
+        bandGrad.addColorStop(0, 'rgba(255,200,120,0.0)');
+        bandGrad.addColorStop(0.5, 'rgba(255,210,140,0.25)');
+        bandGrad.addColorStop(1, 'rgba(255,200,120,0.0)');
+        g.fillStyle = bandGrad;
+
+        g.beginPath();
+        g.moveTo(0, y0);
+        for(let x=0; x<=vw; x+=step){
+          const y = y0 + Math.sin((x*0.04 + t*2 + i)*2.0) * 6;
+          g.lineTo(x, y);
+        }
+        g.lineTo(vw, y0+12);
+        g.lineTo(0,  y0+12);
+        g.closePath();
+        g.fill();
+      }
+      g.restore();
+
+      // 4) Surface fog/glow
+      const fog = g.createLinearGradient(0, top-50, 0, top+20);
+      fog.addColorStop(0,'rgba(255,180,80,0.0)');
+      fog.addColorStop(1,'rgba(255,150,60,0.25)');
+      g.fillStyle=fog; 
+      g.fillRect(0, top-50, vw, 70);
+
+      // 5) Bubbles
+      g.save();
+      g.globalCompositeOperation = 'lighter';
+      for(const b of bubbles){
+        const r = b.r;
+        const grad = g.createRadialGradient(b.x, b.y, 0, b.x, b.y, r*2.2);
+        grad.addColorStop(0.0, 'rgba(255,230,180,0.9)');
+        grad.addColorStop(0.4, 'rgba(255,180,100,0.5)');
+        grad.addColorStop(1.0, 'rgba(255,120,60,0.0)');
+        g.fillStyle = grad;
+        g.beginPath();
+        g.arc(b.x, b.y, r*1.2, 0, Math.PI*2);
+        g.fill();
+      }
+      g.restore();
+    }
+    /* === end lava helpers === */
 
     let camX=0;
 
@@ -683,6 +796,9 @@
       const dt = Math.min(33, ts-lastTs || 16);
       lastTs=ts;
 
+      // animate lava
+      updateLava(dt, window.innerWidth);
+
       if(inMenu){
         render();
         requestAnimationFrame(step);
@@ -834,19 +950,8 @@
         ctx.stroke();
       }
 
-      // Lava
-      const lavaTop = getLavaY();
-      const lavaGrad = ctx.createLinearGradient(0, lavaTop, 0, vh);
-      lavaGrad.addColorStop(0,'rgba(255,120,40,0.9)');
-      lavaGrad.addColorStop(0.35,'rgba(255,80,20,0.9)');
-      lavaGrad.addColorStop(1,'rgba(160,20,20,1)');
-      ctx.fillStyle = lavaGrad;
-      ctx.fillRect(0, lavaTop, vw, vh - lavaTop);
-
-      const glow = ctx.createLinearGradient(0, lavaTop-40, 0, lavaTop+10);
-      glow.addColorStop(0,'rgba(255,120,40,0)');
-      glow.addColorStop(1,'rgba(255,120,40,0.25)');
-      ctx.fillStyle=glow; ctx.fillRect(0, lavaTop-40, vw, 50);
+      // Realistic animated lava
+      drawLava(ctx, vw, vh, lavaT);
 
       // Player sprite (preloaded)
       if (spideyReady){
