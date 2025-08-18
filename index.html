@@ -4,6 +4,17 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Spider Swinger</title>
+
+  <!-- Open Graph / Twitter Card so tweets with your URL show a clickable preview -->
+  <meta property="og:url" content="https://test-octo-game.vercel.app/">
+  <meta property="og:title" content="Octo Swinger">
+  <meta property="og:description" content="Swing, score, and share your badge!">
+  <meta property="og:image" content="https://test-octo-game.vercel.app/share-default.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Octo Swinger">
+  <meta name="twitter:description" content="Swing, score, and share your badge!">
+  <meta name="twitter:image" content="https://test-octo-game.vercel.app/share-default.png">
+
   <style>
     :root{
       --sky1:#0b1f3a;
@@ -37,7 +48,7 @@
     .input{width:100%;padding:10px 12px;border-radius:10px;border:1px solid rgba(255,255,255,.25);background:rgba(0,0,0,.2);color:var(--ui)}
     .label{font-size:13px;opacity:.85;margin-bottom:6px;display:block}
 
-    /* Top-right Menu button */
+    /* Top-right Menu button (lowered a bit) */
     #openMenuBtn{position:fixed;right:16px;top:80px;z-index:6}
 
     /* Mobile controls */
@@ -45,79 +56,43 @@
     .pad{position:absolute;bottom:22px;display:flex;gap:14px;pointer-events:auto}
     .pad.left{
       left:22px;
-      flex-direction:column;   /* stack vertically */
-      gap:16px;                /* space between left & right buttons */
+      flex-direction:column;
+      gap:16px;
     }
     .pad.right{right:22px}
 
     /* Default buttons (Left & Right) */
     .btn{
-      width:90px;
-      height:90px;
-      border-radius:22px;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      font-weight:800;
-      font-size:18px;
-      text-transform:uppercase;
-      color:var(--ui);
-      background:rgba(255,255,255,.08);
-      backdrop-filter:blur(6px);
-      border:1px solid rgba(255,255,255,.2);
-      box-shadow:0 12px 30px -12px var(--shadow);
-      user-select:none;
-      -webkit-user-select:none;
-      touch-action:manipulation;
-      text-align:center;
+      width:90px;height:90px;border-radius:22px;display:flex;align-items:center;justify-content:center;
+      font-weight:800;font-size:18px;text-transform:uppercase;color:var(--ui);
+      background:rgba(255,255,255,.08);backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,.2);
+      box-shadow:0 12px 30px -12px var(--shadow);user-select:none;-webkit-user-select:none;touch-action:manipulation;text-align:center
     }
     .btn:active{transform:translateY(1px)}
 
-    /* Accent "Shoot Web" button — wider + same total height as stacked left/right */
+    /* Shoot Web button — taller/wider, red glass */
     .btn.accent{
-      width:160px;
-      height:196px;
-      font-size:22px;
-      line-height:1.2;
+      width:160px;height:196px;font-size:22px;line-height:1.2;white-space:nowrap;
       background:radial-gradient(circle at 30% 30%, rgba(255,45,85,.35), rgba(255,45,85,.15));
       border-color:rgba(255,45,85,.5);
-      white-space:nowrap;
     }
 
-    /* Backward (Left) button in blue glass */
+    /* Left = blue glass, Right = green glass */
     .btn.left-btn {
       background:radial-gradient(circle at 30% 30%, rgba(0,122,255,.35), rgba(0,122,255,.15));
       border-color:rgba(0,122,255,.5);
       color:#fff;
     }
-
-    /* Forward (Right) button in green glass */
     .btn.right-btn {
       background:radial-gradient(circle at 30% 30%, rgba(52,199,89,.35), rgba(52,199,89,.15));
       border-color:rgba(52,199,89,.5);
       color:#fff;
     }
 
-    /* Simple cloud parallax visuals */
-    .clouds{position:fixed;inset:0;overflow:hidden;pointer-events:none}
-    .cloud{position:absolute;top:10%;width:220px;height:80px;border-radius:80px;background:rgba(255,255,255,.08);filter:blur(2px)}
-    .cloud:before,.cloud:after{content:"";position:absolute;background:inherit;border-radius:inherit}
-    .cloud:before{width:140px;height:60px;left:-40px;top:10px}
-    .cloud:after{width:160px;height:70px;right:-40px;top:5px}
-
-    /* Desktop-only help */
-    @media (min-width: 900px){
-      .hint{font-size:13px}
-    }
-
     /* Square start menu layout */
     #startMenu .panel.start-square{
-      width:min(92vw,300px);
-      height:min(92vw,300px);
-      display:grid;
-      grid-template-rows:auto 1fr auto;
-      gap:16px;
-      padding:24px;
+      width:min(92vw,300px);height:min(92vw,320px);
+      display:grid;grid-template-rows:auto 1fr auto;gap:16px;padding:24px;
     }
     #startMenu .panel.start-square .title{margin:0;text-align:center;font-size:26px;font-weight:800}
     #startMenu .panel.start-square .score-cards{
@@ -131,12 +106,8 @@
 
     /* Square scorecard layout */
     #scorecard .panel.score-square{
-      width:min(92vw,400px);
-      height:min(92vw,400px);
-      display:grid;
-      grid-template-rows:auto 1fr auto auto;
-      gap:16px;
-      padding:24px;
+      width:min(92vw,420px);height:min(92vw,420px);
+      display:grid;grid-template-rows:auto 1fr auto auto;gap:16px;padding:24px;
     }
     #scorecard .panel.score-square .title{margin:0;text-align:center;font-size:24px;font-weight:800}
     #scorecard .panel.score-square .score-main{
@@ -154,18 +125,13 @@
     #scorecard .panel.score-square .controls-square{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
     #scorecard .panel.score-square .btn-ui{min-width:160px;height:44px;padding:0 16px;display:flex;align-items:center;justify-content:center}
 
-    /* Hide the old top-left hint; keep score visible */
+    /* Hide the old hint; score remains */
     .hint{ display:none !important; }
 
     /* Device picker & tutorial panels */
     .panel.device-square, .panel.tutorial-square{
-      width: min(92vw, 420px);
-      height: min(92vw, 420px);
-      display: grid;
-      grid-template-rows: auto 1fr auto;
-      gap: 16px;
-      padding: 24px;
-      border-radius: 16px;
+      width:min(92vw,420px);height:min(92vw,420px);
+      display:grid;grid-template-rows:auto 1fr auto;gap:16px;padding:24px;border-radius:16px;
     }
     .panel .title{margin:0;text-align:center;font-size:24px;font-weight:800}
     .options{display:grid;gap:12px;align-content:center;justify-items:stretch}
@@ -184,10 +150,11 @@
 </head>
 <body>
   <div id="wrap"><canvas id="game" width="1280" height="720" aria-label="Spider Swinger Game Canvas"></canvas></div>
+
   <div class="hud">
     <div class="badge">
       <div class="score" id="score">Score: 0</div>
-      <div class="hint">Desktop: W attach/release web • A/D move • S drop • R restart<br/>Mobile: use the buttons below<br/>Auto-respawn when you fall!</div>
+      <div class="hint">hidden</div>
     </div>
     <div class="badge" id="status">Swing: —</div>
   </div>
@@ -195,7 +162,7 @@
   <!-- Top-right Menu button -->
   <button id="openMenuBtn" class="btn btn-ui">Menu</button>
 
-  <!-- Start Menu Overlay (hidden by default) -->
+  <!-- Start Menu (hidden by default; shown after tutorial) -->
   <div id="startMenu" class="overlay" role="dialog" aria-modal="true">
     <div class="panel start-square">
       <h2 class="title">Octo Swinger</h2>
@@ -212,11 +179,12 @@
       <div class="controls-bar controls-square">
         <button id="startBtn" class="btn-ui">Start</button>
         <button id="openScorecardBtn" class="btn-ui">Download Score</button>
+        <button id="shareXStartBtn" class="btn-ui">Share on X</button>
       </div>
     </div>
   </div>
 
-  <!-- Device Picker (one-time) -->
+  <!-- Device Picker -->
   <div id="devicePicker" class="overlay" role="dialog" aria-modal="true">
     <div class="panel device-square">
       <h2 class="title">Are you playing in what device?</h2>
@@ -232,7 +200,7 @@
     </div>
   </div>
 
-  <!-- Tutorial (content changes based on choice) -->
+  <!-- Tutorial -->
   <div id="tutorial" class="overlay" role="dialog" aria-modal="true">
     <div class="panel tutorial-square">
       <h2 id="tutorialTitle" class="title">How to Play</h2>
@@ -243,7 +211,7 @@
     </div>
   </div>
 
-  <!-- Scorecard Overlay -->
+  <!-- Scorecard -->
   <div id="scorecard" class="overlay" role="dialog" aria-modal="true">
     <div class="panel score-square">
       <h2 class="title">Score Card</h2>
@@ -264,6 +232,7 @@
       <div class="controls-bar controls-square">
         <button id="closeScorecardBtn" class="btn-ui">Close</button>
         <button id="downloadPngBtn" class="btn-ui">Download PNG</button>
+        <button id="shareXBtn" class="btn-ui">Share on X</button>
       </div>
     </div>
   </div>
@@ -288,30 +257,31 @@
   </div>
 
   <script>
-    // --- Utilities ---
+    /* ---------- small helpers ---------- */
     const clamp=(n,min,max)=>Math.max(min,Math.min(max,n));
     const lerp=(a,b,t)=>a+(b-a)*t;
+    const SITE_URL = 'https://test-octo-game.vercel.app/';
+    const TUTORIAL_KEY = 'octo_tutorial_shown';
 
-    // --- Game setup ---
+    // is user typing in an input/textarea/contenteditable?
+    const isTyping = (e) => {
+      const t = e.target;
+      return t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable);
+    };
+
+    /* ---------- DOM refs ---------- */
     const canvas=document.getElementById('game');
     const ctx=canvas.getContext('2d');
     const statusEl=document.getElementById('status');
     const scoreEl=document.getElementById('score');
+
     const startMenu=document.getElementById('startMenu');
     const startBtn=document.getElementById('startBtn');
     const openMenuBtn=document.getElementById('openMenuBtn');
     const openScorecardBtn=document.getElementById('openScorecardBtn');
     const bestScoreLabel=document.getElementById('bestScoreLabel');
     const lastScoreLabel=document.getElementById('lastScoreLabel');
-    const scorecard=document.getElementById('scorecard');
-    const closeScorecardBtn=document.getElementById('closeScorecardBtn');
-    const downloadPngBtn=document.getElementById('downloadPngBtn');
-    const handleInput=document.getElementById('handleInput');
-    const highScoreValue=document.getElementById('highScoreValue');
-    const badgePreview=document.getElementById('badgePreview');
-    const badgeMessage=document.getElementById('badgeMessage');
 
-    // Device picker / tutorial
     const devicePicker = document.getElementById('devicePicker');
     const chooseMobileBtn = document.getElementById('chooseMobileBtn');
     const chooseDesktopBtn = document.getElementById('chooseDesktopBtn');
@@ -319,49 +289,18 @@
     const tutorialTitle = document.getElementById('tutorialTitle');
     const tutorialContent = document.getElementById('tutorialContent');
     const tutorialContinueBtn = document.getElementById('tutorialContinueBtn');
-    const TUTORIAL_KEY = 'octo_tutorial_shown';
 
-    function show(el){ el.classList.add('show'); inMenu = true; }
-    function hide(el){ el.classList.remove('show'); }
-    function showDevicePicker(){ show(devicePicker); }
+    const scorecard=document.getElementById('scorecard');
+    const closeScorecardBtn=document.getElementById('closeScorecardBtn');
+    const downloadPngBtn=document.getElementById('downloadPngBtn');
+    const shareXBtn=document.getElementById('shareXBtn');
+    const shareXStartBtn=document.getElementById('shareXStartBtn');
+    const handleInput=document.getElementById('handleInput');
+    const highScoreValue=document.getElementById('highScoreValue');
+    const badgePreview=document.getElementById('badgePreview');
+    const badgeMessage=document.getElementById('badgeMessage');
 
-    function showTutorial(kind){
-      if(kind === 'mobile'){
-        tutorialTitle.textContent = 'Mobile / Tablet — How to Play';
-        tutorialContent.innerHTML = `
-          <div>Use the on-screen controls:</div>
-          <ul style="margin:0 0 6px 18px; padding:0">
-            <li><span class="kbd">◀︎</span> Left button: move back</li>
-            <li><span class="kbd">▶︎</span> Right button: move forward</li>
-            <li><span class="kbd">Shoot Web</span> button: attach / release your web to swing</li>
-          </ul>
-          <div>Tip: keep swinging and use left/right to build momentum!</div>
-        `;
-      } else {
-        tutorialTitle.textContent = 'Computer / Laptop — How to Play';
-        tutorialContent.innerHTML = `
-          <div>Use your keyboard:</div>
-          <ul style="margin:0 0 6px 18px; padding:0">
-            <li><span class="kbd">A</span> move left</li>
-            <li><span class="kbd">D</span> move right</li>
-            <li><span class="kbd">W</span> (or Space) to shoot web (hold to stay attached)</li>
-          </ul>
-          <div>Tip: release at the right time to gain speed between anchors!</div>
-        `;
-      }
-      hide(devicePicker);
-      show(tutorial);
-    }
-
-    // One-time listeners
-    chooseMobileBtn.addEventListener('click', ()=> showTutorial('mobile'));
-    chooseDesktopBtn.addEventListener('click', ()=> showTutorial('desktop'));
-    tutorialContinueBtn.addEventListener('click', ()=>{
-      localStorage.setItem(TUTORIAL_KEY, 'true');
-      hide(tutorial);
-      showMenu();
-    });
-
+    /* ---------- sizing ---------- */
     let W=canvas.width, H=canvas.height;
     function resize(){
       const dpr=window.devicePixelRatio||1;
@@ -373,136 +312,16 @@
     window.addEventListener('resize', resize, {passive:true});
     resize();
 
-    // --- World state ---
-    const gravity=0.9;
-    const moveAccel=0.6;
-    const maxRunSpeed=8;
-
+    /* ---------- world state ---------- */
+    const gravity=0.9, moveAccel=0.6, maxRunSpeed=8;
     const player={x:120,y:300,vx:0,vy:0,r:12,onGround:false,rope:null,ropeLen:0,dead:false};
 
-    // Preload player sprite once
-    const spideyImg = new Image();
-    spideyImg.src = 'player.png';
-    let spideyReady=false;
-    spideyImg.onload=()=>{ spideyReady=true; };
+    // preload player sprite
+    const spideyImg = new Image(); spideyImg.src = 'player.png';
+    let spideyReady=false; spideyImg.onload=()=>{ spideyReady=true; };
 
     const lavaHeight=120;
     const getLavaY = () => window.innerHeight - lavaHeight;
-
-    /* === Realistic lava state & helpers === */
-    let lavaT = 0;                // time in seconds
-    const bubbles = [];
-    function spawnBubble(xMin, xMax, yTop){
-      bubbles.push({
-        x: xMin + Math.random() * (xMax - xMin),
-        y: yTop + 40 + Math.random() * 120,
-        r: 2 + Math.random() * 5,
-        vx: (Math.random() * 0.4 - 0.2),
-        vy: - (0.4 + Math.random() * 0.8),
-        life: 1.0
-      });
-    }
-    function updateLava(dt, vw){
-      lavaT += dt * 0.001; // ms -> s
-      const rate = Math.max(1, Math.floor(vw / 400));
-      for(let i=0;i<rate;i++){
-        if(Math.random() < 0.4) spawnBubble(0, vw, getLavaY());
-      }
-      for(let i=bubbles.length-1;i>=0;i--){
-        const b = bubbles[i];
-        b.x += b.vx + Math.sin((b.y + lavaT*120) * 0.02) * 0.05;
-        b.y += b.vy;
-        b.r *= 0.999;
-        b.life -= 0.008 + Math.random()*0.006;
-        if(b.y < getLavaY() + 4) b.life -= 0.03;
-        if(b.life <= 0 || b.y < getLavaY() - 2) bubbles.splice(i,1);
-      }
-    }
-    function drawLava(g, vw, vh, t){
-      const top = getLavaY();
-      // 1) Base pool
-      const baseGrad = g.createLinearGradient(0, top, 0, vh);
-      baseGrad.addColorStop(0.00, 'rgba(255,160,40,0.95)');
-      baseGrad.addColorStop(0.25, 'rgba(255,90,20,0.95)');
-      baseGrad.addColorStop(0.55, 'rgba(200,30,20,1.0)');
-      baseGrad.addColorStop(1.00, 'rgba(60,10,10,1.0)');
-      g.fillStyle = baseGrad;
-      g.fillRect(0, top, vw, vh - top);
-
-      // 2) Wavy surface rim
-      const amp = 12 + Math.sin(t*2.1)*4;
-      const freq = 0.012;
-      const speed = 40;
-      const offset = t * speed;
-
-      g.beginPath();
-      g.moveTo(0, top);
-      const step = 18;
-      for(let x=0; x<=vw; x+=step){
-        const y = top + Math.sin((x + offset)*freq) * amp
-                        + Math.sin((x*0.5 + offset*0.7)*freq*0.8) * (amp*0.35);
-        g.lineTo(x, y);
-      }
-      g.lineTo(vw, vh);
-      g.lineTo(0, vh);
-      g.closePath();
-
-      const rimGrad = g.createLinearGradient(0, top-30, 0, top+40);
-      rimGrad.addColorStop(0.0, 'rgba(255,240,160,0.00)');
-      rimGrad.addColorStop(0.4, 'rgba(255,220,120,0.35)');
-      rimGrad.addColorStop(1.0, 'rgba(255,120,40,0.10)');
-      g.fillStyle = rimGrad;
-      g.fill();
-
-      // 3) Hot streaks
-      g.save();
-      g.globalCompositeOperation = 'lighter';
-      for(let i=0;i<4;i++){
-        const y0 = top + 40 + i*30 + Math.sin(t*1.2 + i)*12;
-        const bandGrad = g.createLinearGradient(0, y0-10, 0, y0+10);
-        bandGrad.addColorStop(0, 'rgba(255,200,120,0.0)');
-        bandGrad.addColorStop(0.5, 'rgba(255,210,140,0.25)');
-        bandGrad.addColorStop(1, 'rgba(255,200,120,0.0)');
-        g.fillStyle = bandGrad;
-
-        g.beginPath();
-        g.moveTo(0, y0);
-        for(let x=0; x<=vw; x+=step){
-          const y = y0 + Math.sin((x*0.04 + t*2 + i)*2.0) * 6;
-          g.lineTo(x, y);
-        }
-        g.lineTo(vw, y0+12);
-        g.lineTo(0,  y0+12);
-        g.closePath();
-        g.fill();
-      }
-      g.restore();
-
-      // 4) Surface fog/glow
-      const fog = g.createLinearGradient(0, top-50, 0, top+20);
-      fog.addColorStop(0,'rgba(255,180,80,0.0)');
-      fog.addColorStop(1,'rgba(255,150,60,0.25)');
-      g.fillStyle=fog; 
-      g.fillRect(0, top-50, vw, 70);
-
-      // 5) Bubbles
-      g.save();
-      g.globalCompositeOperation = 'lighter';
-      for(const b of bubbles){
-        const r = b.r;
-        const grad = g.createRadialGradient(b.x, b.y, 0, b.x, b.y, r*2.2);
-        grad.addColorStop(0.0, 'rgba(255,230,180,0.9)');
-        grad.addColorStop(0.4, 'rgba(255,180,100,0.5)');
-        grad.addColorStop(1.0, 'rgba(255,120,60,0.0)');
-        g.fillStyle = grad;
-        g.beginPath();
-        g.arc(b.x, b.y, r*1.2, 0, Math.PI*2);
-        g.fill();
-      }
-      g.restore();
-    }
-    /* === end lava helpers === */
-
     let camX=0;
 
     const buildings=[]; // {x,w,h,top}
@@ -516,7 +335,7 @@
         x += gap + (i===0?0:buildings[i-1]?.w||0);
         const w=Math.random()*120+100;
         const h= lerp(window.innerHeight*0.25, window.innerHeight*0.6, Math.random());
-        const top=getLavaY()-h;
+        const top=getLavaY()-h; 
         buildings.push({x,w,h,top});
         const aCount = Math.random()<0.5?1:2;
         for(let k=0;k<aCount;k++){
@@ -551,31 +370,36 @@
 
     spawnInitialCity();
 
-    // --- Input ---
+    /* ---------- input ---------- */
     const keys={a:false,d:false,w:false,s:false};
 
     window.addEventListener('keydown',e=>{
+      if (isTyping(e)) return; // don't hijack keys while typing in the handle input
       const k=e.key.toLowerCase();
-      if(['w','a','s','d',' '].includes(k)) e.preventDefault();
+      if(['w','a','d',' '].includes(k)) e.preventDefault();
       if(k==='a') keys.a=true;
       if(k==='d') keys.d=true;
       if(k==='w' || k===' ') keys.w=true;
-      if(k==='s') keys.s=true;
       if(k==='r') restart();
     });
+
     window.addEventListener('keyup',e=>{
+      if (isTyping(e)) return;
       const k=e.key.toLowerCase();
       if(k==='a') keys.a=false;
       if(k==='d') keys.d=false;
       if(k==='w' || k===' ') keys.w=false;
-      if(k==='s') keys.s=false;
     });
 
+    // stop game keys from bubbling when typing just in case
+    handleInput.addEventListener('keydown', e => e.stopPropagation());
+    handleInput.addEventListener('keyup', e => e.stopPropagation());
+
     // Mobile buttons (hold behavior)
-    const holds={left:false,right:false,swing:false,drop:false};
+    const holds={left:false,right:false,swing:false};
     for(const el of document.querySelectorAll('[data-hold]')){
       const name=el.getAttribute('data-hold');
-      const set=(v)=>{holds[name]=v; if(name==='left') keys.a=v; if(name==='right') keys.d=v; if(name==='swing') keys.w=v; if(name==='drop') keys.s=v;};
+      const set=(v)=>{holds[name]=v; if(name==='left') keys.a=v; if(name==='right') keys.d=v; if(name==='swing') keys.w=v;};
       const start=(e)=>{e.preventDefault(); set(true)};
       const end=(e)=>{e.preventDefault(); set(false)};
       el.addEventListener('touchstart',start,{passive:false});
@@ -586,7 +410,7 @@
       el.addEventListener('mouseleave',end);
     }
 
-    // --- Web attach/detach ---
+    /* ---------- swing attach/detach ---------- */
     function tryAttachWeb(){
       const range=420;
       let best=null, bestD=1e9;
@@ -606,7 +430,7 @@
     }
     function detachWeb(){ player.rope=null; }
 
-    // --- Collision helpers ---
+    /* ---------- collisions ---------- */
     function groundCollision(){
       player.onGround=false;
       for(const b of buildings){
@@ -618,7 +442,7 @@
       }
     }
 
-    // --- Scoring ---
+    /* ---------- scoring ---------- */
     let score=0; let bestX=0; let passed=0;
     let highestScore= Number(localStorage.getItem('spider_high_score')||0);
     let lastScore=0;
@@ -660,20 +484,13 @@
       updateScoreDisplay();
     }
 
-    // --- Menus & Scorecard ---
+    /* ---------- menus ---------- */
     function updateMenuLabels(){
       bestScoreLabel.textContent = highestScore;
       lastScoreLabel.textContent = lastScore;
     }
-
-    function showMenu(){
-      gameActive=false; inMenu=true; startMenu.classList.add('show');
-      updateMenuLabels();
-    }
-
-    function hideMenu(){
-      inMenu=false; startMenu.classList.remove('show');
-    }
+    function showMenu(){ gameActive=false; inMenu=true; startMenu.classList.add('show'); updateMenuLabels(); }
+    function hideMenu(){ inMenu=false; startMenu.classList.remove('show'); }
 
     function endRun(){
       lastScore = score;
@@ -700,10 +517,17 @@
       badgeMessage.textContent = badge.msg;
       scorecard.classList.add('show');
     }
-
     function closeScorecard(){ scorecard.classList.remove('show'); }
 
-    // --- Download card PNG with exact boxes ---
+    /* ---------- Share on X ---------- */
+    function shareOnX(score){
+      const text = encodeURIComponent(`I scored ${score} in Octo Swinger!`);
+      const url  = encodeURIComponent(SITE_URL);
+      const share = `https://twitter.com/intent/tweet?text=${text}&url=${url}`;
+      window.open(share, '_blank');
+    }
+
+    /* ---------- Download scorecard PNG ---------- */
     function downloadScorecardPng(){
       const s = highestScore;
       const cardSrc =
@@ -752,6 +576,7 @@
 
         g.drawImage(base, 0, 0, w, h);
 
+        // exact areas unchanged
         const HS_BOX     = { x:1176, y:70,  w:378,  h:212 };
         const HANDLE_BOX = { x: 644, y:461, w:1000, h:121 };
 
@@ -766,6 +591,13 @@
           weight:'700', preferredSize:54, minSize:22, align:'left', vAlign:'middle', padding:28
         });
 
+        // add visible site URL bottom-right (so reposted images still show your site)
+        g.textAlign = 'right';
+        g.textBaseline = 'alphabetic';
+        g.fillStyle = '#222';
+        g.font = '700 24px Inter, Arial, sans-serif';
+        g.fillText('test-octo-game.vercel.app', w - 24, h - 24);
+
         const a=document.createElement('a');
         a.download='scorecard.png';
         a.href=c.toDataURL('image/png');
@@ -774,14 +606,56 @@
       base.src = cardSrc;
     }
 
-    // Buttons
+    /* ---------- UI buttons ---------- */
     startBtn.addEventListener('click',()=>{ hideMenu(); restart(); gameActive=true; });
     openMenuBtn.addEventListener('click',()=>{ showMenu(); });
     openScorecardBtn.addEventListener('click',()=>{ openScorecard(); });
     closeScorecardBtn.addEventListener('click',()=>{ closeScorecard(); });
     downloadPngBtn.addEventListener('click',()=>{ downloadScorecardPng(); });
+    shareXBtn.addEventListener('click',()=> shareOnX(highestScore));
+    shareXStartBtn.addEventListener('click',()=> shareOnX(highestScore));
 
-    // --- Score Display ---
+    /* ---------- tutorial flow ---------- */
+    function show(el){ el.classList.add('show'); inMenu = true; }
+    function hide(el){ el.classList.remove('show'); }
+
+    function showDevicePicker(){ show(devicePicker); }
+    function showTutorial(kind){
+      if(kind === 'mobile'){
+        tutorialTitle.textContent = 'Mobile / Tablet — How to Play';
+        tutorialContent.innerHTML = `
+          <div>Use the on-screen controls:</div>
+          <ul style="margin:0 0 6px 18px; padding:0">
+            <li><span class="kbd">◀︎</span> Left button: move back</li>
+            <li><span class="kbd">▶︎</span> Right button: move forward</li>
+            <li><span class="kbd">Shoot Web</span> button: attach / release your web to swing</li>
+          </ul>
+          <div>Tip: keep swinging and use left/right to build momentum!</div>
+        `;
+      } else {
+        tutorialTitle.textContent = 'Computer / Laptop — How to Play';
+        tutorialContent.innerHTML = `
+          <div>Use your keyboard:</div>
+          <ul style="margin:0 0 6px 18px; padding:0">
+            <li><span class="kbd">A</span> move left</li>
+            <li><span class="kbd">D</span> move right</li>
+            <li><span class="kbd">W</span> (or Space) to shoot web (hold to stay attached)</li>
+          </ul>
+          <div>Tip: release at the right time to gain speed between anchors!</div>
+        `;
+      }
+      hide(devicePicker); show(tutorial);
+    }
+
+    chooseMobileBtn.addEventListener('click', ()=> showTutorial('mobile'));
+    chooseDesktopBtn.addEventListener('click', ()=> showTutorial('desktop'));
+    tutorialContinueBtn.addEventListener('click', ()=>{
+      localStorage.setItem(TUTORIAL_KEY, 'true');
+      hide(tutorial);
+      showMenu();
+    });
+
+    /* ---------- score display ---------- */
     function updateScoreDisplay(){
       if(gameActive){
         scoreEl.textContent = `Score: ${score}`;
@@ -790,14 +664,11 @@
       }
     }
 
-    // --- Main loop ---
+    /* ---------- main loop ---------- */
     let lastTs=0;
     function step(ts){
       const dt = Math.min(33, ts-lastTs || 16);
       lastTs=ts;
-
-      // animate lava
-      updateLava(dt, window.innerWidth);
 
       if(inMenu){
         render();
@@ -807,24 +678,19 @@
 
       extendCityIfNeeded();
 
-      // Movement
       if(player.onGround){
         if(keys.a) player.vx = clamp(player.vx - moveAccel, -maxRunSpeed, maxRunSpeed);
         if(keys.d) player.vx = clamp(player.vx + moveAccel, -maxRunSpeed, maxRunSpeed);
         if(!keys.a && !keys.d) player.vx *= 0.86;
       }
 
-      // Attach/Detach
       if(keys.w && !player.rope) tryAttachWeb();
       if(!keys.w && player.rope) detachWeb();
-      if(keys.s) detachWeb();
 
-      // Physics
       player.vy += gravity;
       player.x += player.vx; 
       player.y += player.vy;
 
-      // Rope constraint
       if(player.rope){
         const rx = player.rope.x - player.x;
         const ry = player.rope.y - player.y;
@@ -843,10 +709,8 @@
         }
       }
 
-      // Collisions with rooftops
       groundCollision();
 
-      // Lava hazard
       const lavaY = getLavaY();
       if(player.y + player.r >= lavaY){
         if(gameActive){
@@ -858,7 +722,6 @@
         }
       }
 
-      // Fallback fail below screen
       if(player.y - player.r > H + 300){ 
         if(gameActive) {
           player.dead=true; gameActive=false;
@@ -869,7 +732,6 @@
         }
       }
       
-      // Respawn timer
       if(respawnTimer > 0) {
         respawnTimer--;
         if(respawnTimer === 0) respawn();
@@ -877,10 +739,8 @@
       
       statusEl.textContent = player.dead ? 'Game Over — respawning in 2s...' : (player.rope ? 'Swing: attached' : 'Swing: free');
 
-      // Camera follow
       camX = lerp(camX, player.x - window.innerWidth*0.35, 0.08);
 
-      // Count passed buildings
       for(let i=passed;i<buildings.length;i++){
         if(buildings[i].x + buildings[i].w < player.x){ passed=i; }
         else break;
@@ -891,16 +751,12 @@
       requestAnimationFrame(step);
     }
 
-    // --- Render ---
+    /* ---------- render ---------- */
     function render(){
       const vw = window.innerWidth; const vh = window.innerHeight;
       ctx.clearRect(0,0,vw,vh);
 
-      // Parallax distant skyline
-      const layers=[
-        {offset:0.2,color:'rgba(10,16,28,0.6)'},
-        {offset:0.35,color:'rgba(10,20,34,0.75)'}
-      ];
+      const layers=[{offset:0.2,color:'rgba(10,16,28,0.6)'},{offset:0.35,color:'rgba(10,20,34,0.75)'}];
       layers.forEach((layer,idx)=>{
         ctx.fillStyle=layer.color;
         for(let i=0;i<buildings.length;i+=2){
@@ -912,7 +768,6 @@
         }
       });
 
-      // Foreground buildings
       for(const b of buildings){
         const x = Math.floor(b.x - camX);
         const y = b.top;
@@ -932,7 +787,6 @@
         }
       }
 
-      // Anchors
       ctx.fillStyle='rgba(255,255,255,0.6)';
       for(const a of anchors){
         const x = Math.floor(a.x - camX), y=a.y;
@@ -940,7 +794,6 @@
         ctx.beginPath(); ctx.arc(x,y,2,0,Math.PI*2); ctx.fill();
       }
 
-      // Rope
       if(player.rope){
         ctx.strokeStyle='rgba(255,255,255,0.8)';
         ctx.lineWidth=2;
@@ -950,23 +803,43 @@
         ctx.stroke();
       }
 
-      // Realistic animated lava
-      drawLava(ctx, vw, vh, lavaT);
+      // Lava (simple gradient; you can replace with your more realistic variant)
+      const lavaTop = getLavaY();
+      const lavaGrad = ctx.createLinearGradient(0, lavaTop, 0, vh);
+      lavaGrad.addColorStop(0,'rgba(255,120,40,0.9)');
+      lavaGrad.addColorStop(0.35,'rgba(255,80,20,0.9)');
+      lavaGrad.addColorStop(1,'rgba(160,20,20,1)');
+      ctx.fillStyle = lavaGrad;
+      ctx.fillRect(0, lavaTop, vw, vh - lavaTop);
 
-      // Player sprite (preloaded)
+      const glow = ctx.createLinearGradient(0, lavaTop-40, 0, lavaTop+10);
+      glow.addColorStop(0,'rgba(255,120,40,0)');
+      glow.addColorStop(1,'rgba(255,120,40,0.25)');
+      ctx.fillStyle=glow; ctx.fillRect(0, lavaTop-40, vw, 50);
+
       if (spideyReady){
         const px = player.x - camX, py = player.y;
         const size = player.r * 3 + 4;
         ctx.drawImage(spideyImg, px - size/2, py - size/2, size, size);
       }
 
-      // Ground fade
       const grd=ctx.createLinearGradient(0, vh-120, 0, vh);
       grd.addColorStop(0,'rgba(0,0,0,0)'); grd.addColorStop(1,'rgba(0,0,0,.3)');
       ctx.fillStyle=grd; ctx.fillRect(0, vh-120, vw, 120);
     }
 
-    // Boot
+    /* ---------- boot ---------- */
+    function updateScoreDisplay(){
+      if(gameActive){ scoreEl.textContent = `Score: ${score}`; }
+      else { scoreEl.textContent = `Latest: ${lastScore} | Best: ${highestScore}`; }
+    }
+
+    function show(el){ el.classList.add('show'); inMenu = true; }
+    function hide(el){ el.classList.remove('show'); }
+
+    function showDevicePicker(){ show(devicePicker); }
+
+    // initial scene & flow
     spawnInitialCity();
     placePlayerOnFirstBuilding();
 
@@ -976,8 +849,11 @@
       showDevicePicker();
     }
 
+    // device picker events
+    chooseMobileBtn.addEventListener('click', ()=> showTutorial('mobile'));
+    chooseDesktopBtn.addEventListener('click', ()=> showTutorial('desktop'));
+
     requestAnimationFrame(step);
   </script>
 </body>
 </html>
-
