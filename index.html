@@ -522,19 +522,18 @@
     }
     function closeScorecard(){ scorecard.classList.remove('show'); }
 
-    /* ---------- Share on X (badge + message, no score) ---------- */
+    /* ---------- Share on X (exact format you requested) ---------- */
     function shareOnX(score){
-      // Use your existing badge logic
-      const badge = computeBadgeForScore(score);
-
-      // Build tweet text (no score mentioned)
-      const text = encodeURIComponent(
-        `I am a ${badge.name.charAt(0).toUpperCase() + badge.name.slice(1)} in Octo Swinger! ` +
-        `\\Please post it with the Octo Score Card and without it the post dosen't look well!\\`
-      );
-
-      const url  = encodeURIComponent(SITE_URL);
-      const share = `https://twitter.com/intent/tweet?text=${text}&url=${url}`;
+      // First line: message + URL on the same line
+      const line1 = `I scored ${score} in Octo Swinger! ${SITE_URL}`;
+      // Second line: note in braces, with a blank line before it
+      const line2 = `{Kindly post this with Octo Score Card}`;
+    
+      // Put them together with a blank line between
+      const text = encodeURIComponent(`${line1}\n\n${line2}`);
+    
+      // Open the X (Twitter) share intent with text only (URL already in text)
+      const share = `https://twitter.com/intent/tweet?text=${text}`;
       window.open(share, '_blank');
     }
 
@@ -939,3 +938,4 @@
   </script>
 </body>
 </html>
+
