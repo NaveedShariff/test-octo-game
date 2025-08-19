@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Spider Swinger</title>
+  <title>Octoman</title>
 
   <!-- Open Graph / Twitter Card so tweets with your URL show a clickable preview -->
   <meta property="og:url" content="https://test-octo-game.vercel.app/">
@@ -11,9 +11,10 @@
   <meta property="og:description" content="Swing, score, and share your badge!">
   <meta property="og:image" content="https://test-octo-game.vercel.app/share-default.png">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Octo Swinger">
+  <meta name="twitter:title" content="Octoman">
   <meta name="twitter:description" content="Swing, score, and share your badge!">
   <meta name="twitter:image" content="https://test-octo-game.vercel.app/share-default.png">
+  <link rel="icon" type="image/png" href="player.png">
 
   <style>
     :root{
@@ -165,7 +166,7 @@
   <!-- Start Menu (hidden by default; shown after tutorial) -->
   <div id="startMenu" class="overlay" role="dialog" aria-modal="true">
     <div class="panel start-square">
-      <h2 class="title">Octo Swinger</h2>
+      <h2 class="title">Octoman</h2>
       <div class="score-cards">
         <div class="score-card">
           <div class="label">Best Score</div>
@@ -525,7 +526,7 @@
     /* ---------- Share on X (exact format you requested) ---------- */
     function shareOnX(score){
       // First line: message + URL on the same line
-      const line1 = `I scored ${score} in Octo Swinger! ${SITE_URL}`;
+      const line1 = `I scored ${score} in Octoman! ${SITE_URL}`;
       // Second line: note in braces, with a blank line before it
       const line2 = `{Kindly post this with Octo Score Card}`;
     
@@ -938,5 +939,6 @@
   </script>
 </body>
 </html>
+
 
 
